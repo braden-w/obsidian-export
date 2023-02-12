@@ -4,8 +4,11 @@ const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
 const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
 
-const slugify = (fileName: string) =>
-  fileName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase()
+const slugify = (fileName: `${string}.md`) =>
+  fileName
+    .replaceAll(" ", "-")
+    .replace(/[^a-zA-Z0-9-_]/g, "")
+    .toLowerCase()
 
 const processText = (text: string) =>
   text.replace(/\[\[([^\]]+)\]\]/g, (_match, fileName) => {
