@@ -23,12 +23,15 @@ async function readFiles(dir: string) {
   for await (const dirEntry of Deno.readDir(dir)) {
     if (dirEntry.isDirectory) {
       await readFiles(`${dir}/${dirEntry.name}`)
+      continue
     }
     if (!dirEntry.name.endsWith(".md")) continue
-    const filePath = `${dir}/${dirEntry.name}`
+
+    // Now we know it's a markdown file
+    const filePath = `${dir}/${dirEntry.name}` as `${string}.md`
     const fileText = await Deno.readTextFile(filePath)
-    if (!isCriteriaMet({ filePath, fileText })) continue
-    const processedText = processText(text)
+    if (!isCriteriaMet({ filePath: filePath, fileText: fileText })) continue
+    const processedText = processText(fileText)
     await Deno.writeTextFile(
       `${outputDirectory}/${dirEntry.name}`,
       processedText
@@ -42,7 +45,7 @@ function isCriteriaMet({
   filePath,
   fileText,
 }: {
-  filePath: string
+  filePath: `${string}.md`
   fileText: string
 }) {
   return filePath.includes("Content/") && fileText.includes("")
