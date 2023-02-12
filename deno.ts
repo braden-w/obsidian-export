@@ -19,13 +19,19 @@ const processText = (text: string) =>
     }
   })
 
-;(async () => {
-  for await (const file of Deno.readDir(contentDirectory)) {
-    if (!file.name.endsWith(".md")) continue
-    console.log("🚀 ~ file: deno.ts:24 ~ forawait ~ file", file)
-    const text = await Deno.readTextFile(`${contentDirectory}${file}`)
-    console.log("🚀 ~ file: deno.ts:26 ~ forawait ~ text", text)
+async function readFiles(dir: string) {
+  for await (const dirEntry of Deno.readDir(dir)) {
+    if (dirEntry.isDirectory) {
+      await readFiles(`${dir}/${dirEntry.name}`)
+    }
+    if (!dirEntry.name.endsWith(".md")) continue
+    const text = await Deno.readTextFile(`${dir}/${dirEntry.name}`)
     const processedText = processText(text)
-    await fs.writeFile(`${outputDirectory}/${file}`, processedText, "utf-8")
+    await Deno.writeTextFile(
+      `${outputDirectory}/${dirEntry.name}`,
+      processedText
+    )
   }
-})().catch((error) => console.error(error))
+}
+
+await readFiles(contentDirectory)
