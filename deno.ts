@@ -35,17 +35,7 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
   })
 }
 
-const processText = (text: string) =>
-  text.replace(/\[\[([^\]]+)\]\]/g, (_match, fileName) => {
-    const slug = slugifyFileName(fileName)
-    const filePath = `${contentDirectory}${fileName}`
-    try {
-      fs.accessSync(filePath)
-      return `[${fileName}](${slug})`
-    } catch {
-      return `*${fileName}*`
-    }
-  })
+const processText = (text: string) => wikilinksToLinks(text)
 
 async function readFiles(dir: string) {
   for await (const dirEntry of Deno.readDir(dir)) {
