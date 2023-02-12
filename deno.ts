@@ -1,5 +1,4 @@
-// import { promises as fs } from "deno"
-import * as fs from "https://deno.land/std/fs/mod.ts"
+import * as fs from "https://deno.land/std@0.148.0/node/fs.ts"
 
 const contentDirectory = "/Users/braden/Code/obsidian/"
 const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
@@ -20,7 +19,7 @@ const processText = (text: string) =>
   })
 
 ;(async () => {
-  const files = await fs.readdir(contentDirectory)
+  const files = await fs.readdir(contentDirectory, )
   for (const file of files) {
     if (!file.endsWith(".md")) continue
     const text = await fs.readFile(`${contentDirectory}${file}`, "utf-8")
