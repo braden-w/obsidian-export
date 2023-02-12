@@ -1,6 +1,7 @@
 import * as fs from "https://deno.land/std@0.148.0/node/fs.ts"
 
-const contentDirectory = "/Users/braden/Code/obsidian/"
+const contentDirectory =
+  "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
 const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
 
 const slugify = (fileName: string) =>
@@ -19,10 +20,11 @@ const processText = (text: string) =>
   })
 
 ;(async () => {
-  const files = await fs.readdir(contentDirectory, )
-  for (const file of files) {
-    if (!file.endsWith(".md")) continue
-    const text = await fs.readFile(`${contentDirectory}${file}`, "utf-8")
+  for await (const file of Deno.readDir(contentDirectory)) {
+    if (!file.name.endsWith(".md")) continue
+    console.log("🚀 ~ file: deno.ts:24 ~ forawait ~ file", file)
+    const text = await Deno.readTextFile(`${contentDirectory}${file}`)
+    console.log("🚀 ~ file: deno.ts:26 ~ forawait ~ text", text)
     const processedText = processText(text)
     await fs.writeFile(`${outputDirectory}/${file}`, processedText, "utf-8")
   }
