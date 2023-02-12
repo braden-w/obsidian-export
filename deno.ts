@@ -1,5 +1,3 @@
-import * as fs from "https://deno.land/std@0.148.0/node/fs.ts"
-
 const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
 const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
