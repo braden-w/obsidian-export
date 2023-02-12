@@ -25,7 +25,9 @@ async function readFiles(dir: string) {
       await readFiles(`${dir}/${dirEntry.name}`)
     }
     if (!dirEntry.name.endsWith(".md")) continue
-    const text = await Deno.readTextFile(`${dir}/${dirEntry.name}`)
+    const filePath = `${dir}/${dirEntry.name}`
+    const fileText = await Deno.readTextFile(filePath)
+    if (!isCriteriaMet({ filePath, fileText })) continue
     const processedText = processText(text)
     await Deno.writeTextFile(
       `${outputDirectory}/${dirEntry.name}`,
@@ -35,3 +37,13 @@ async function readFiles(dir: string) {
 }
 
 await readFiles(contentDirectory)
+
+function isCriteriaMet({
+  filePath,
+  fileText,
+}: {
+  filePath: string
+  fileText: string
+}) {
+  return filePath.includes("Content/") && fileText.includes("")
+}
