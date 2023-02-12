@@ -30,7 +30,7 @@ async function readFiles(dir: string) {
     // Now we know it's a markdown file
     const filePath = `${dir}/${dirEntry.name}` as `${string}.md`
     const fileText = await Deno.readTextFile(filePath)
-    if (!isCriteriaMet({ filePath: filePath, fileText: fileText })) continue
+    if (!isCriteriaMet({ filePath, fileText })) continue
     const processedText = processText(fileText)
     await Deno.writeTextFile(
       `${outputDirectory}/${dirEntry.name}`,
