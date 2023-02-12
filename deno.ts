@@ -22,7 +22,6 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
         return `[${text}](${slugifyFileName(page)})`
       }
     }
-
     // Otherwise, use the page name as the link text
     const match = s.match(/\[\[(.+?)\]\]/)
     if (match) {
@@ -33,7 +32,20 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
   })
 }
 
-const processText = (text: string) => wikilinksToLinks(text)
+function embedLinksToLinks(stringWithEmbedLinks: string): string {
+  const embedLinkRegex = /!\[\[(.+?)\]\]/g
+  return stringWithEmbedLinks.replace(embedLinkRegex, (s: string) => {
+    if (!s) return ""
+    const match = s.match(/!\[\[(.+?)\]\]/)
+    if (match) {
+      const embeddedImageName = match[1]
+      return `![${embeddedImageName}](/assets/${embeddedImageName})`
+    }
+    return ""
+  })
+}
+
+const processText = (text: string) => wikilinksToLinks(embedLinksToLinks(text))
 
 async function readFiles(dir: string) {
   for await (const dirEntry of Deno.readDir(dir)) {
