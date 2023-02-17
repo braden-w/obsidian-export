@@ -5,6 +5,7 @@ const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
 const slugifyFileName = (fileName: `${string}.md`) =>
   fileName
     .replaceAll(" ", "-")
+    .replaceAll("—", "-")
     .replace(/[^a-zA-Z0-9-_]/g, "")
     .toLowerCase()
 
@@ -53,15 +54,22 @@ async function readFiles(dir: string) {
       await readFiles(`${dir}/${dirEntry.name}`)
       continue
     }
-    if (!dirEntry.name.endsWith(".md")) continue
+    if (
+      !dirEntry.name.endsWith(".md") ||
+      dirEntry.name.includes("?") ||
+      dirEntry.name.includes("%")
+    )
+      continue
 
     // Now we know it's a markdown file
-    const filePath = `${dir}/${dirEntry.name}` as `${string}.md`
+    const fileName = dirEntry.name as `${string}.md`
+    const filePath = `${dir}/${fileName}` as `${string}/${string}.md`
     const fileText = await Deno.readTextFile(filePath)
     if (!isCriteriaMet({ filePath, fileText })) continue
     const processedText = processText(fileText)
+    const slugifiedFileName = slugifyFileName(fileName)
     await Deno.writeTextFile(
-      `${outputDirectory}/${dirEntry.name}`,
+      `${outputDirectory}/${slugifiedFileName}`,
       processedText
     )
   }
