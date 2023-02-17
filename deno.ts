@@ -46,7 +46,15 @@ function embedLinksToLinks(stringWithEmbedLinks: string): string {
   })
 }
 
-const processText = (text: string) => wikilinksToLinks(embedLinksToLinks(text))
+// Function that adds `title: ${title}` to the second line of the string
+function addTitleToSecondLine(inputString: string, title: string): string {
+  const lines = inputString.split("\n")
+  lines.splice(1, 0, `title: ${title}`)
+  return lines.join("\n")
+}
+
+const processText = (text: string, title: string) =>
+  addTitleToSecondLine(wikilinksToLinks(embedLinksToLinks(text)), title)
 
 async function readFiles(dir: string) {
   for await (const dirEntry of Deno.readDir(dir)) {
@@ -54,19 +62,16 @@ async function readFiles(dir: string) {
       await readFiles(`${dir}/${dirEntry.name}`)
       continue
     }
-    if (
-      !dirEntry.name.endsWith(".md") ||
-      dirEntry.name.includes("?") ||
-      dirEntry.name.includes("%")
-    )
-      continue
+    if (!dirEntry.name.endsWith(".md")) continue
 
     // Now we know it's a markdown file
     const fileName = dirEntry.name as `${string}.md`
     const filePath = `${dir}/${fileName}` as const
     const fileText = await Deno.readTextFile(filePath)
+
     if (!isCriteriaMet({ filePath, fileText })) continue
-    const processedText = processText(fileText)
+
+    const processedText = processText(fileText, fileName.slice(0, -3))
     const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
     await Deno.writeTextFile(
       `${outputDirectory}/${slugifiedFileName}`,
