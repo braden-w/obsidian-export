@@ -67,7 +67,7 @@ async function readFiles(dir: string) {
     const fileText = await Deno.readTextFile(filePath)
     if (!isCriteriaMet({ filePath, fileText })) continue
     const processedText = processText(fileText)
-    const slugifiedFileName = slugifyFileName(fileName)
+    const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
     await Deno.writeTextFile(
       `${outputDirectory}/${slugifiedFileName}`,
       processedText
