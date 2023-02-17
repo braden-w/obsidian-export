@@ -59,27 +59,24 @@ function addTitleToSecondLine(inputString: string, title: string): string {
 const processText = (text: string, title: string) =>
   addTitleToSecondLine(wikilinksToLinks(embedLinksToLinks(text)), title)
 
-async function readFiles(dir: string) {
-  for await (const dirEntry of Deno.readDir(dir)) {
+async function readFiles(inputDir: string, outputDir: string) {
+  for await (const dirEntry of Deno.readDir(inputDir)) {
     if (dirEntry.isDirectory) {
-      await readFiles(`${dir}/${dirEntry.name}`)
+      await readFiles(`${inputDir}/${dirEntry.name}`, outputDir)
       continue
     }
     if (!dirEntry.name.endsWith(".md")) continue
 
     // Now we know it's a markdown file
     const fileName = dirEntry.name as `${string}.md`
-    const filePath = `${dir}/${fileName}` as const
+    const filePath = `${inputDir}/${fileName}` as const
     const fileText = await Deno.readTextFile(filePath)
 
     if (!isCriteriaMet({ filePath, fileText })) continue
 
     const processedText = processText(fileText, fileName.slice(0, -3))
     const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
-    await Deno.writeTextFile(
-      `${contentOutputDirectory}/${slugifiedFileName}`,
-      processedText
-    )
+    await Deno.writeTextFile(`${outputDir}/${slugifiedFileName}`, processedText)
   }
 }
 
@@ -99,7 +96,7 @@ async function copyDirectory(inputDir: string, outputDir: string) {
   }
 }
 
-await readFiles(contentDirectory)
+await readFiles(contentDirectory, contentOutputDirectory)
 await copyDirectory(assetsDirectory, assetsOutputDirectory)
 
 function isCriteriaMet({
