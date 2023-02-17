@@ -18,7 +18,7 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
     if (s.includes("|")) {
       const match = s.match(/\[\[(.+?)\|(.+?)\]\]/)
       if (match) {
-        const page = match[1] as `{string}.md`
+        const page = match[1]
         const text = match[2]
         return `[${text}](${slugifyFileName(page)})`
       }
@@ -26,7 +26,7 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
     // Otherwise, use the page name as the link text
     const match = s.match(/\[\[(.+?)\]\]/)
     if (match) {
-      const page = match[1] as `{string}.md`
+      const page = match[1]
       return `[${page}](${slugifyFileName(page)})`
     }
     return ""
@@ -63,7 +63,7 @@ async function readFiles(dir: string) {
 
     // Now we know it's a markdown file
     const fileName = dirEntry.name as `${string}.md`
-    const filePath = `${dir}/${fileName}` as `${string}/${string}.md`
+    const filePath = `${dir}/${fileName}` as const
     const fileText = await Deno.readTextFile(filePath)
     if (!isCriteriaMet({ filePath, fileText })) continue
     const processedText = processText(fileText)
