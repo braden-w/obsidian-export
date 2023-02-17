@@ -1,6 +1,9 @@
 const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
-const outputDirectory = "/Users/braden/Code/optim/src/content/articles"
+const contentOutputDirectory = "/Users/braden/Code/optim/src/content/articles"
+const assetsDirectory =
+  "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/assets"
+const assetsOutputDirectory = "/Users/braden/Code/optim/public"
 
 const slugifyFileName = (fileName: string) =>
   fileName
@@ -74,13 +77,30 @@ async function readFiles(dir: string) {
     const processedText = processText(fileText, fileName.slice(0, -3))
     const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
     await Deno.writeTextFile(
-      `${outputDirectory}/${slugifiedFileName}`,
+      `${contentOutputDirectory}/${slugifiedFileName}`,
       processedText
     )
   }
 }
 
+async function copyDirectory(inputDir: string, outputDir: string) {
+  const inputFiles = await Deno.readDir(inputDir)
+
+  for await (const file of inputFiles) {
+    const src = `${inputDir}/${file.name}`
+    const dest = `${outputDir}/${file.name}`
+
+    if (file.isFile) {
+      await Deno.copyFile(src, dest)
+    } else if (file.isDirectory) {
+      await Deno.mkdir(dest)
+      await copyDirectory(src, dest)
+    }
+  }
+}
+
 await readFiles(contentDirectory)
+await copyDirectory(assetsDirectory, assetsOutputDirectory)
 
 function isCriteriaMet({
   filePath,
