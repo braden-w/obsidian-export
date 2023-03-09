@@ -3,7 +3,7 @@ const contentDirectory =
 const contentOutputDirectory = "/Users/braden/Code/optim/src/content/articles"
 const assetsDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/assets"
-const assetsOutputDirectory = "/Users/braden/Code/optim/public"
+const assetsOutputDirectory = "/Users/braden/Code/optim/public/assets"
 
 const slugifyFileName = (fileName: string) =>
   fileName
@@ -36,6 +36,22 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
   })
 }
 
+function prefaceMarkdownLinksWithAssetsFolder(
+  stringWithMarkdownLinks: string
+): string {
+  const markdownLinkRegex = /\[(.+?)\]\((.+?)\)/g
+  return stringWithMarkdownLinks.replace(markdownLinkRegex, (s: string) => {
+    if (!s) return ""
+    const match = s.match(/\[(.+?)\]\((.+?)\)/)
+    if (match) {
+      const text = match[1]
+      const link = match[2]
+      return `[${text}](/assets/${link})`
+    }
+    return ""
+  })
+}
+
 function embedLinksToLinks(stringWithEmbedLinks: string): string {
   const embedLinkRegex = /!\[\[(.+?)\]\]/g
   return stringWithEmbedLinks.replace(embedLinkRegex, (s: string) => {
@@ -57,7 +73,10 @@ function addTitleToSecondLine(inputString: string, title: string): string {
 }
 
 const processText = (text: string, title: string) =>
-  addTitleToSecondLine(wikilinksToLinks(embedLinksToLinks(text)), title)
+  addTitleToSecondLine(
+    wikilinksToLinks(prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text))),
+    title
+  )
 
 async function readFiles(inputDir: string, outputDir: string) {
   for await (const dirEntry of Deno.readDir(inputDir)) {
