@@ -74,7 +74,9 @@ function addTitleToSecondLine(inputString: string, title: string): string {
 
 const processText = (text: string, title: string) =>
   addTitleToSecondLine(
-    wikilinksToLinks(prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text))),
+    wikilinksToLinks(
+      prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text))
+    ),
     title
   )
 
@@ -125,5 +127,5 @@ function isCriteriaMet({
   filePath: `${string}.md`
   fileText: string
 }) {
-  return filePath.includes("Content/") && fileText.includes("")
+  return fileText.includes("status: DONE")
 }
