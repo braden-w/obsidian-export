@@ -30,17 +30,16 @@ function wikilinksToLinks(
     if (s.includes("|")) {
       const match = s.match(/\[\[(.+?)\|(.+?)\]\]/)
       if (match) {
-        const page = match[1]
-        const text = match[2]
+        const [_, page, alias] = match
         if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
-          return `_${text}_`
-        return `[${text}](${slugifyFileName(page)})`
+          return `_${alias}_`
+        return `[${alias}](${slugifyFileName(page)})`
       }
     }
     // Otherwise, use the page name as the link text
     const match = s.match(/\[\[(.+?)\]\]/)
     if (match) {
-      const page = match[1]
+      const [_, page] = match
       // If slugifyFileName(page) in allMarkdownSlugifiedFiles, return the link
       if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
         return `_${page}_`
