@@ -1,7 +1,12 @@
-export const processText = (text: string, title: string) =>
+export const processText = (
+  text: string,
+  title: string,
+  allMarkdownSlugifiedFiles: Set<string>
+) =>
   addTitleToSecondLine(
     wikilinksToLinks(
-      prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text))
+      prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text)),
+      allMarkdownSlugifiedFiles
     ),
     title
   )
@@ -13,7 +18,10 @@ export const slugifyFileName = (fileName: string) =>
     .replace(/[^a-zA-Z0-9-_]/g, "")
     .toLowerCase()
 
-function wikilinksToLinks(stringWithWikilinks: string): string {
+function wikilinksToLinks(
+  stringWithWikilinks: string,
+  allMarkdownSlugifiedFiles: Set<string>
+): string {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return stringWithWikilinks.replace(wikilinkRegex, (s: string) => {
     if (!s) return ""
@@ -24,6 +32,8 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
       if (match) {
         const page = match[1]
         const text = match[2]
+        if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
+          return `_${text}_`
         return `[${text}](${slugifyFileName(page)})`
       }
     }
@@ -31,6 +41,9 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
     const match = s.match(/\[\[(.+?)\]\]/)
     if (match) {
       const page = match[1]
+      // If slugifyFileName(page) in allMarkdownSlugifiedFiles, return the link
+      if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
+        return `_${page}_`
       return `[${page}](${slugifyFileName(page)})`
     }
     return ""

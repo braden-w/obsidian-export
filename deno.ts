@@ -7,11 +7,11 @@ const assetsDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/assets"
 const assetsOutputDirectory = "/Users/braden/Code/optim/public/assets"
 
-async function moveFiles(inputDir: string, outputDir: string) {
-  const allMarkdownSlugifiedFiles = await readFiles(inputDir, outputDir)
+const allMarkdownSlugifiedFiles = await getMarkdownFiles(contentDirectory)
+async function obsidianExport(inputDir: string, outputDir: string) {
   for await (const dirEntry of Deno.readDir(inputDir)) {
     if (dirEntry.isDirectory) {
-      await readFiles(`${inputDir}/${dirEntry.name}`, outputDir)
+      await obsidianExport(`${inputDir}/${dirEntry.name}`, outputDir)
       continue
     }
     if (!dirEntry.name.endsWith(".md")) continue
@@ -23,7 +23,11 @@ async function moveFiles(inputDir: string, outputDir: string) {
 
     if (!isCriteriaMet({ filePath, fileText })) continue
 
-    const processedText = processText(fileText, fileName.slice(0, -3))
+    const processedText = processText(
+      fileText,
+      fileName.slice(0, -3),
+      allMarkdownSlugifiedFiles
+    )
     const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
     await Deno.writeTextFile(`${outputDir}/${slugifiedFileName}`, processedText)
   }
@@ -47,14 +51,17 @@ async function copyDirectory(inputDir: string, outputDir: string) {
 async function getMarkdownFiles(directoryPath: string): Promise<Set<string>> {
   const markdownFiles = new Set<string>()
   for await (const dirEntry of Deno.readDir(directoryPath)) {
-    const filePath = `${directoryPath}/${dirEntry.name}`
+    const path = `${directoryPath}/${dirEntry.name}`
     if (dirEntry.isDirectory) {
-      const subDirectoryMarkdownFiles = await getMarkdownFiles(filePath)
+      const subDirectoryMarkdownFiles = await getMarkdownFiles(path)
       subDirectoryMarkdownFiles.forEach((markdownFile) => {
-        markdownFiles.add(`${slugifyFileName(markdownFile.slice(0, -3))}.md`)
+        markdownFiles.add(`${slugifyFileName(markdownFile)}`)
       })
-    } else if (filePath.endsWith(".md")) {
-      markdownFiles.add(`${slugifyFileName(dirEntry.name.slice(0, -3))}.md`)
+    } else if (path.endsWith(".md")) {
+      const filePath = `${directoryPath}/${dirEntry.name}` as `${string}.md`
+      const fileText = await Deno.readTextFile(filePath)
+      if (!isCriteriaMet({ filePath, fileText })) continue
+      markdownFiles.add(`${slugifyFileName(dirEntry.name.slice(0, -3))}`)
     }
   }
   return markdownFiles
@@ -70,6 +77,6 @@ function isCriteriaMet({
   return fileText.includes("status: DONE")
 }
 
-// await readFiles(contentDirectory, contentOutputDirectory)
-// await copyDirectory(assetsDirectory, assetsOutputDirectory)
-console.log(await getMarkdownFiles(contentDirectory))
+await obsidianExport(contentDirectory, contentOutputDirectory)
+await copyDirectory(assetsDirectory, assetsOutputDirectory)
+// console.log(await getMarkdownFiles(contentDirectory))
