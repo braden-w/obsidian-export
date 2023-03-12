@@ -29,6 +29,21 @@ async function moveFiles(inputDir: string, outputDir: string) {
   }
 }
 
+async function copyDirectory(inputDir: string, outputDir: string) {
+  const inputFiles = await Deno.readDir(inputDir)
+
+  for await (const file of inputFiles) {
+    const src = `${inputDir}/${file.name}`
+    const dest = `${outputDir}/${file.name}`
+
+    if (file.isFile) {
+      await Deno.copyFile(src, dest)
+    } else if (file.isDirectory) {
+      await Deno.mkdir(dest)
+      await copyDirectory(src, dest)
+    }
+  }
+}
 async function getMarkdownFiles(directoryPath: string): Promise<Set<string>> {
   const markdownFiles = new Set<string>()
   for await (const dirEntry of Deno.readDir(directoryPath)) {
@@ -45,26 +60,6 @@ async function getMarkdownFiles(directoryPath: string): Promise<Set<string>> {
   return markdownFiles
 }
 
-async function copyDirectory(inputDir: string, outputDir: string) {
-  const inputFiles = await Deno.readDir(inputDir)
-
-  for await (const file of inputFiles) {
-    const src = `${inputDir}/${file.name}`
-    const dest = `${outputDir}/${file.name}`
-
-    if (file.isFile) {
-      await Deno.copyFile(src, dest)
-    } else if (file.isDirectory) {
-      await Deno.mkdir(dest)
-      await copyDirectory(src, dest)
-    }
-  }
-}
-
-// await readFiles(contentDirectory, contentOutputDirectory)
-// await copyDirectory(assetsDirectory, assetsOutputDirectory)
-console.log(await getMarkdownFiles(contentDirectory))
-
 function isCriteriaMet({
   filePath,
   fileText,
@@ -74,3 +69,7 @@ function isCriteriaMet({
 }) {
   return fileText.includes("status: DONE")
 }
+
+// await readFiles(contentDirectory, contentOutputDirectory)
+// await copyDirectory(assetsDirectory, assetsOutputDirectory)
+console.log(await getMarkdownFiles(contentDirectory))
