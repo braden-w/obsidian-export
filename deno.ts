@@ -39,14 +39,14 @@ function wikilinksToLinks(stringWithWikilinks: string): string {
 function prefaceMarkdownLinksWithAssetsFolder(
   stringWithMarkdownLinks: string
 ): string {
-  const markdownLinkRegex = /\[(.+?)\]\((.+?)\)/g
+  const markdownLinkRegex = /!\[(.+?)\]\((.+?)\)/g
   return stringWithMarkdownLinks.replace(markdownLinkRegex, (s: string) => {
     if (!s) return ""
     const match = s.match(/\[(.+?)\]\((.+?)\)/)
     if (match) {
       const text = match[1]
       const link = match[2]
-      return `[${text}](/assets/${link})`
+      return `![${text}](/assets/${link})`
     }
     return ""
   })
