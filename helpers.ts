@@ -4,10 +4,7 @@ export const processText = (
   allMarkdownSlugifiedFiles: Set<string>
 ) =>
   addTitleToSecondLine(
-    wikilinksToLinks(
-      prefaceMarkdownLinksWithAssetsFolder(embedLinksToLinks(text)),
-      allMarkdownSlugifiedFiles
-    ),
+    wikilinksToLinks(embedLinksToLinks(text), allMarkdownSlugifiedFiles),
     title
   )
 
@@ -44,22 +41,6 @@ function wikilinksToLinks(
       if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
         return `_${page}_`
       return `[${page}](${slugifyFileName(page)})`
-    }
-    return ""
-  })
-}
-
-function prefaceMarkdownLinksWithAssetsFolder(
-  stringWithMarkdownLinks: string
-): string {
-  const markdownLinkRegex = /!\[(.+?)\]\((.+?)\)/g
-  return stringWithMarkdownLinks.replace(markdownLinkRegex, (s: string) => {
-    if (!s) return ""
-    const match = s.match(/\[(.+?)\]\((.+?)\)/)
-    if (match) {
-      const text = match[1]
-      const link = match[2]
-      return `![${text}](/assets/${link})`
     }
     return ""
   })
