@@ -1,4 +1,6 @@
-import { processText, slugifyFileName } from "./helpers.ts"
+import { getMarkdownFiles, getImageFiles } from "./getFiles.ts"
+import { isCriteriaMet, slugifyFileName } from "./helpers.ts"
+import { processText } from "./processText.ts"
 
 const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
@@ -49,70 +51,6 @@ async function copyDirectory(inputDir: string, outputDir: string) {
     }
   }
 }
-async function getMarkdownFiles(directoryPath: string): Promise<Set<string>> {
-  const markdownFiles = new Set<string>()
-  for await (const dirEntry of Deno.readDir(directoryPath)) {
-    const path = `${directoryPath}/${dirEntry.name}`
-    if (dirEntry.isDirectory) {
-      const subDirectoryMarkdownFiles = await getMarkdownFiles(path)
-      subDirectoryMarkdownFiles.forEach((markdownFile) => {
-        markdownFiles.add(`${slugifyFileName(markdownFile)}`)
-      })
-    } else if (path.endsWith(".md")) {
-      const filePath = `${directoryPath}/${dirEntry.name}` as `${string}.md`
-      const fileText = await Deno.readTextFile(filePath)
-      if (!isCriteriaMet({ filePath, fileText })) continue
-      markdownFiles.add(`${slugifyFileName(dirEntry.name.slice(0, -3))}`)
-    }
-  }
-  return markdownFiles
-}
-
-async function getMarkdownFilePaths(
-  directoryPath: string
-): Promise<Set<string>> {
-  const markdownFiles = new Set<string>()
-  for await (const dirEntry of Deno.readDir(directoryPath)) {
-    const path = `${directoryPath}/${dirEntry.name}`
-    if (dirEntry.isDirectory) {
-      const subDirectoryMarkdownFiles = await getMarkdownFilePaths(path)
-      subDirectoryMarkdownFiles.forEach((markdownFile) => {
-        markdownFiles.add(markdownFile)
-      })
-    } else if (path.endsWith(".md")) {
-      const filePath = `${directoryPath}/${dirEntry.name}` as `${string}.md`
-      const fileText = await Deno.readTextFile(filePath)
-      if (!isCriteriaMet({ filePath, fileText })) continue
-      markdownFiles.add(filePath)
-    }
-  }
-  return markdownFiles
-}
-
-async function getImageFiles(directoryPath: string): Promise<Set<string>> {
-  const filePaths = await getMarkdownFilePaths(directoryPath)
-  const imageFiles = new Set<string>()
-  for (const filePath of filePaths) {
-    const content = await Deno.readTextFile(filePath)
-    const wikilinkRegex = /\[\[(.+?)\]\]/g
-    let match
-    while ((match = wikilinkRegex.exec(content)) !== null) {
-      imageFiles.add(decodeURIComponent(match[1]))
-    }
-  }
-  return imageFiles
-}
-
-function isCriteriaMet({
-  filePath,
-  fileText,
-}: {
-  filePath: `${string}.md`
-  fileText: string
-}) {
-  return fileText.includes("status: DONE")
-}
-
 await obsidianExport(contentDirectory, contentOutputDirectory)
 await copyDirectory(assetsDirectory, assetsOutputDirectory)
 // console.log(await getMarkdownFiles(contentDirectory))
