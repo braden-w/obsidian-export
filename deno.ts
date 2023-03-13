@@ -33,6 +33,7 @@ async function obsidianExport(inputDir: string, outputDir: string) {
   }
 }
 
+const allImageFiles = await getImageFiles(contentDirectory)
 async function copyDirectory(inputDir: string, outputDir: string) {
   const inputFiles = await Deno.readDir(inputDir)
 
@@ -40,7 +41,7 @@ async function copyDirectory(inputDir: string, outputDir: string) {
     const src = `${inputDir}/${file.name}`
     const dest = `${outputDir}/${file.name}`
 
-    if (file.isFile) {
+    if (file.isFile && allImageFiles.has(file.name)) {
       await Deno.copyFile(src, dest)
     } else if (file.isDirectory) {
       await Deno.mkdir(dest)
@@ -65,6 +66,41 @@ async function getMarkdownFiles(directoryPath: string): Promise<Set<string>> {
     }
   }
   return markdownFiles
+}
+
+async function getMarkdownFilePaths(
+  directoryPath: string
+): Promise<Set<string>> {
+  const markdownFiles = new Set<string>()
+  for await (const dirEntry of Deno.readDir(directoryPath)) {
+    const path = `${directoryPath}/${dirEntry.name}`
+    if (dirEntry.isDirectory) {
+      const subDirectoryMarkdownFiles = await getMarkdownFilePaths(path)
+      subDirectoryMarkdownFiles.forEach((markdownFile) => {
+        markdownFiles.add(markdownFile)
+      })
+    } else if (path.endsWith(".md")) {
+      const filePath = `${directoryPath}/${dirEntry.name}` as `${string}.md`
+      const fileText = await Deno.readTextFile(filePath)
+      if (!isCriteriaMet({ filePath, fileText })) continue
+      markdownFiles.add(filePath)
+    }
+  }
+  return markdownFiles
+}
+
+async function getImageFiles(directoryPath: string): Promise<Set<string>> {
+  const filePaths = await getMarkdownFilePaths(directoryPath)
+  const imageFiles = new Set<string>()
+  for (const filePath of filePaths) {
+    const content = await Deno.readTextFile(filePath)
+    const wikilinkRegex = /\[\[(.+?)\]\]/g
+    let match
+    while ((match = wikilinkRegex.exec(content)) !== null) {
+      imageFiles.add(decodeURIComponent(match[1]))
+    }
+  }
+  return imageFiles
 }
 
 function isCriteriaMet({
