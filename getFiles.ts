@@ -52,7 +52,7 @@ export async function getImageFiles(
     const wikilinkRegex = /\[\[(.+?)\]\]/g
     let match
     while ((match = wikilinkRegex.exec(content)) !== null) {
-      imageFiles.add(decodeURIComponent(match[1]))
+      imageFiles.add(match[1])
     }
   }
   return imageFiles
