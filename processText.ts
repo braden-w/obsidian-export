@@ -25,8 +25,8 @@ function wikilinksToLinks(
       if (match) {
         const [_, page, alias] = match
         if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
-          return `_${alias}_`
-        return `[${alias}](${slugifyFileName(page)})`
+          return `${alias}`
+        return `[${alias}](/articles/${slugifyFileName(page)})`
       }
     }
     // Otherwise, use the page name as the link text
@@ -35,8 +35,8 @@ function wikilinksToLinks(
       const [_, page] = match
       // If slugifyFileName(page) in allMarkdownSlugifiedFiles, return the link
       if (!allMarkdownSlugifiedFiles.has(slugifyFileName(page)))
-        return `_${page}_`
-      return `[${page}](${slugifyFileName(page)})`
+        return `${page}`
+      return `[${page}](/articles/${slugifyFileName(page)})`
     }
     return ""
   })
