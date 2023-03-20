@@ -49,7 +49,8 @@ function embedLinksToLinks(stringWithEmbedLinks: string): string {
     const match = s.match(/!\[\[(.+?)\]\]/)
     if (match) {
       const embeddedImageName = match[1]
-      return `![${embeddedImageName}](/assets/${embeddedImageName})`
+      const embeddedImageNameNoSpaces = embeddedImageName.replace(/ /g, "-")
+      return `![${embeddedImageName}](/assets/${embeddedImageNameNoSpaces})`
     }
     return ""
   })

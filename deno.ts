@@ -41,7 +41,7 @@ async function copyDirectory(inputDir: string, outputDir: string) {
 
   for await (const file of inputFiles) {
     const src = `${inputDir}/${file.name}`
-    const dest = `${outputDir}/${file.name}`
+    const dest = `${outputDir}/${file.name.replace(/ /g, "-")}`
 
     if (file.isFile && allImageFiles.has(file.name)) {
       await Deno.copyFile(src, dest)
