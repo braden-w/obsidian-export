@@ -7,9 +7,9 @@ import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 export async function obsidianExport(
   inputDir: string,
   outputDir: string,
-  allMarkdownSlugifiedFiles: Set<string> | null = null
+  allMarkdownSlugifiedFiles?: Set<string>
 ) {
-  if (allMarkdownSlugifiedFiles === null)
+  if (!allMarkdownSlugifiedFiles)
     allMarkdownSlugifiedFiles = await getMarkdownFiles(inputDir)
 
   for await (const dirEntry of Deno.readDir(inputDir)) {
