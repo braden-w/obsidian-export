@@ -1,4 +1,4 @@
-import { slugifyFileName } from "./helpers.ts"
+import { slugifyFileName } from "../helpers.js"
 
 export function processText(
   text: string,
