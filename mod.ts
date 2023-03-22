@@ -13,11 +13,21 @@ await obsidianExport(contentDirectory, contentOutputDirectory)
 await copyDirectory(assetsDirectory, assetsOutputDirectory)
 // console.log(await getMarkdownFiles(contentDirectory))
 
-const allMarkdownSlugifiedFiles = await getMarkdownFiles(contentDirectory)
-async function obsidianExport(inputDir: string, outputDir: string) {
+async function obsidianExport(
+  inputDir: string,
+  outputDir: string,
+  allMarkdownSlugifiedFiles: Set<string> | null = null
+) {
+  if (allMarkdownSlugifiedFiles === null)
+    allMarkdownSlugifiedFiles = await getMarkdownFiles(contentDirectory)
+
   for await (const dirEntry of Deno.readDir(inputDir)) {
     if (dirEntry.isDirectory) {
-      await obsidianExport(`${inputDir}/${dirEntry.name}`, outputDir)
+      await obsidianExport(
+        `${inputDir}/${dirEntry.name}`,
+        outputDir,
+        allMarkdownSlugifiedFiles
+      )
       continue
     }
     if (!dirEntry.name.endsWith(".md")) continue
