@@ -1,4 +1,4 @@
-import { getImageFiles } from "../helpers/fileUtils.js"
+import { getImageFiles } from "../helpers/fileUtils.ts"
 
 export async function copyDirectory(
   inputDir: string,

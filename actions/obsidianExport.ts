@@ -1,7 +1,7 @@
-import { getMarkdownFiles } from "../helpers/fileUtils.js"
-import { isCriteriaMet } from "../helpers/isCriteriaMet.js"
-import { processText } from "../helpers/processText.js"
-import { slugifyFileName } from "../helpers/slugifyFileName.js"
+import { getMarkdownFiles } from "../helpers/fileUtils.ts"
+import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { processText } from "../helpers/processText.ts"
+import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 
 // console.log(await getMarkdownFiles(contentDirectory))
 export async function obsidianExport(
