@@ -1,3 +1,13 @@
+# TODO
+
+A simple Deno script that exports Obsidian files. Things it currently does:
+
+1. Outputs into `outputDirectory` with a flat folder structure
+2. Will ignore any file that doesn't satisfy the `isCriteriaMet` function
+3.
+
+Heavily inspired by my botched attempt at [writing a script in Golang](https://github.com/braden-w/logseq-export/)
+
 # Old
 
 Write a Node.js Typescript script that does the following:
