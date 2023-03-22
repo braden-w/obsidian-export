@@ -49,8 +49,13 @@ async function obsidianExport(
   }
 }
 
-const allImageFiles = await getImageFiles(contentDirectory)
-async function copyDirectory(inputDir: string, outputDir: string) {
+async function copyDirectory(
+  inputDir: string,
+  outputDir: string,
+  allImageFiles: Set<string> | null = null
+) {
+  if (allImageFiles === null)
+    allImageFiles = await getImageFiles(contentDirectory)
   const inputFiles = await Deno.readDir(inputDir)
 
   for await (const file of inputFiles) {
@@ -61,7 +66,7 @@ async function copyDirectory(inputDir: string, outputDir: string) {
       await Deno.copyFile(src, dest)
     } else if (file.isDirectory) {
       await Deno.mkdir(dest)
-      await copyDirectory(src, dest)
+      await copyDirectory(src, dest, allImageFiles)
     }
   }
 }
