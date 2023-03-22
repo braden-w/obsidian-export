@@ -3,7 +3,6 @@ import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { processText } from "../helpers/processText.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 
-// console.log(await getMarkdownFiles(contentDirectory))
 export async function obsidianExport(
   inputDir: string,
   outputDir: string,

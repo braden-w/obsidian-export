@@ -10,3 +10,4 @@ const assetsOutputDirectory = "/Users/braden/Code/optim/public/assets"
 
 await obsidianExport(contentDirectory, contentOutputDirectory)
 await copyDirectory(assetsDirectory, assetsOutputDirectory)
+// console.log(await getMarkdownFiles(contentDirectory))
