@@ -9,6 +9,10 @@ const assetsDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/assets"
 const assetsOutputDirectory = "/Users/braden/Code/optim/public/assets"
 
+await obsidianExport(contentDirectory, contentOutputDirectory)
+await copyDirectory(assetsDirectory, assetsOutputDirectory)
+// console.log(await getMarkdownFiles(contentDirectory))
+
 const allMarkdownSlugifiedFiles = await getMarkdownFiles(contentDirectory)
 async function obsidianExport(inputDir: string, outputDir: string) {
   for await (const dirEntry of Deno.readDir(inputDir)) {
@@ -51,6 +55,3 @@ async function copyDirectory(inputDir: string, outputDir: string) {
     }
   }
 }
-await obsidianExport(contentDirectory, contentOutputDirectory)
-await copyDirectory(assetsDirectory, assetsOutputDirectory)
-// console.log(await getMarkdownFiles(contentDirectory))
