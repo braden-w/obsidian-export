@@ -1,13 +1,11 @@
-import { getImageFiles } from "./helpers/getFiles.ts"
-import { contentDirectory } from "./mod"
+import { getImageFiles } from "./helpers/fileUtils.ts"
 
 export async function copyDirectory(
   inputDir: string,
   outputDir: string,
   allImageFiles: Set<string> | null = null
 ) {
-  if (allImageFiles === null)
-    allImageFiles = await getImageFiles(contentDirectory)
+  if (allImageFiles === null) allImageFiles = await getImageFiles(inputDir)
   const inputFiles = await Deno.readDir(inputDir)
 
   for await (const file of inputFiles) {
