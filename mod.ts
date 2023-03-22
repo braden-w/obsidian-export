@@ -1,6 +1,6 @@
-import { getMarkdownFiles, getImageFiles } from "./getFiles.js"
-import { isCriteriaMet, slugifyFileName } from "./helpers.js"
-import { processText } from "./processText.js"
+import { getMarkdownFiles, getImageFiles } from "./helpers/getFiles.ts"
+import { isCriteriaMet, slugifyFileName } from "./helpers/helpers.ts"
+import { processText } from "./helpers/processText.ts"
 
 const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
