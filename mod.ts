@@ -1,5 +1,5 @@
-import { copyDirectory } from "./copyDirectory.ts"
-import { obsidianExport } from "./obsidianExport.ts"
+import { copyDirectory } from "./actions/copyDirectory.ts"
+import { obsidianExport } from "./actions/obsidianExport.ts"
 
 export const contentDirectory =
   "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian"
