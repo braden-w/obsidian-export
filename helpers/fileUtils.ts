@@ -1,4 +1,5 @@
-import { slugifyFileName, isCriteriaMet } from "./helpers.ts"
+import { isCriteriaMet } from "./isCriteriaMet.ts"
+import { slugifyFileName } from "./slugifyFileName.ts"
 
 export async function getMarkdownFiles(
   directoryPath: string
