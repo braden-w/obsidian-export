@@ -43,10 +43,12 @@ export async function getMarkdownFilePaths(
   return markdownFiles
 }
 
+type Slug = string
+type MarkdownFileSummary = { filePath: `${string}.md`; content: string }
 export async function getMarkdownFilesData(
   directoryPath: string
-): Promise<Map<string, { filePath: string; content: string }>> {
-  const markdownFiles = new Map<string, { filePath: string; content: string }>()
+): Promise<Map<Slug, MarkdownFileSummary>> {
+  const markdownFiles = new Map<Slug, MarkdownFileSummary>()
 
   async function traverseDirectory(path: string) {
     for await (const dirEntry of Deno.readDir(path)) {
