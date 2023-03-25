@@ -58,7 +58,7 @@ export async function getMarkdownFilesData(
       } else if (entryPath.endsWith(".md")) {
         const filePath = `${path}/${dirEntry.name}` as `${string}.md`
         const fileText = await Deno.readTextFile(filePath)
-        if (!isCriteriaMet({ filePath, fileText })) continue
+        // if (!isCriteriaMet({ filePath, fileText })) continue
         const slug = slugifyFileName(dirEntry.name.slice(0, -3))
         markdownFiles.set(slug, { filePath, content: fileText })
       }
