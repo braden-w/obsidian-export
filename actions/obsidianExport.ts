@@ -1,4 +1,4 @@
-import { getMarkdownFiles } from "../helpers/fileUtils.ts"
+import { getMarkdownFileSlugs } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { processText } from "../helpers/processText.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
@@ -9,7 +9,7 @@ export async function obsidianExport(
   allMarkdownSlugifiedFiles?: Set<string>
 ) {
   if (!allMarkdownSlugifiedFiles)
-    allMarkdownSlugifiedFiles = await getMarkdownFiles(inputDir)
+    allMarkdownSlugifiedFiles = await getMarkdownFileSlugs(inputDir)
 
   for await (const dirEntry of Deno.readDir(inputDir)) {
     if (dirEntry.isDirectory) {
