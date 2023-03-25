@@ -44,7 +44,12 @@ export async function getMarkdownFilePaths(
 }
 
 type Slug = string
-type MarkdownFileSummary = { filePath: `${string}.md`; content: string }
+type MarkdownFileSummary = {
+  fileName: `${string}.md`
+  fileNameWithoutExtension: string
+  filePath: `${string}.md`
+  content: string
+}
 export async function getMarkdownFilesData(
   directoryPath: string
 ): Promise<Map<Slug, MarkdownFileSummary>> {
@@ -56,11 +61,18 @@ export async function getMarkdownFilesData(
       if (dirEntry.isDirectory) {
         await traverseDirectory(entryPath)
       } else if (entryPath.endsWith(".md")) {
-        const filePath = `${path}/${dirEntry.name}` as `${string}.md`
-        const fileText = await Deno.readTextFile(filePath)
+        const fileName = dirEntry.name as `${string}.md`
+        const fileNameWithoutExtension = fileName.slice(0, -3)
+        const filePath = `${path}/${fileName}` satisfies `${string}.md`
+        const content = await Deno.readTextFile(filePath)
+        const slug = slugifyFileName(fileNameWithoutExtension)
         // if (!isCriteriaMet({ filePath, fileText })) continue
-        const slug = slugifyFileName(dirEntry.name.slice(0, -3))
-        markdownFiles.set(slug, { filePath, content: fileText })
+        markdownFiles.set(slug, {
+          fileName,
+          fileNameWithoutExtension,
+          filePath,
+          content,
+        })
       }
     }
   }
