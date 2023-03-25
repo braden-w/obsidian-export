@@ -50,7 +50,7 @@ type MarkdownFileSummary = {
   filePath: `${string}.md`
   content: string
 }
-export async function getMarkdownFilesData(
+export async function getMarkdownFileSummaries(
   directoryPath: string
 ): Promise<Map<Slug, MarkdownFileSummary>> {
   const markdownFiles = new Map<Slug, MarkdownFileSummary>()
