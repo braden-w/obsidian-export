@@ -8,24 +8,35 @@ export async function getMarkdownFileSummaries(
 
   async function traverseDirectory(path: string) {
     for await (const dirEntry of Deno.readDir(path)) {
-      const entryPath = `${path}/${dirEntry.name}`
+      const entryPath = `${path}/${dirEntry.name}` as const
       if (dirEntry.isDirectory) {
         await traverseDirectory(entryPath)
-      } else if (entryPath.endsWith(".md")) {
-        const fileName = dirEntry.name as `${string}.md`
-        const fileNameWithoutExtension = fileName.slice(0, -3)
-        const filePath = `${path}/${fileName}` as const
-        const fileText = await Deno.readTextFile(filePath)
-        const slug = slugifyFileName(fileNameWithoutExtension)
-        markdownFiles.set(slug, {
-          fileName,
-          fileNameWithoutExtension,
-          filePath,
-          fileText,
-        })
+      } else {
+        await processFileEntry(entryPath, dirEntry.name)
       }
     }
   }
+
+  async function processFileEntry(entryPath: string, entryName: string) {
+    if (entryPath.endsWith(".md")) {
+      const fileName = entryName as `${string}.md`
+      const fileNameWithoutExtension = removeFileExtension(fileName)
+      const filePath = entryPath as `${string}.md`
+      const fileText = await Deno.readTextFile(filePath)
+      const slug = slugifyFileName(fileNameWithoutExtension)
+      markdownFiles.set(slug, {
+        fileName,
+        fileNameWithoutExtension,
+        filePath,
+        fileText,
+      })
+    }
+  }
+
+  function removeFileExtension(fileName: string): string {
+    return fileName.slice(0, -3)
+  }
+
   await traverseDirectory(directoryPath)
   return markdownFiles
 }
