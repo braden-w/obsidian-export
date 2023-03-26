@@ -1,68 +1,5 @@
-import { MarkdownFileSummary, Slug } from "../types.d.ts"
-import { isCriteriaMet } from "./isCriteriaMet.ts"
+import { Slug, MarkdownFileSummary } from "../types.d.ts"
 import { slugifyFileName } from "./slugifyFileName.ts"
-
-export async function getMarkdownFileSlugs(
-  directoryPath: string
-): Promise<Set<string>> {
-  const markdownFiles = new Set<string>()
-  for await (const dirEntry of Deno.readDir(directoryPath)) {
-    const path = `${directoryPath}/${dirEntry.name}`
-    if (dirEntry.isDirectory) {
-      const subDirectoryMarkdownFiles = await getMarkdownFileSlugs(path)
-      subDirectoryMarkdownFiles.forEach((markdownFile) => {
-        markdownFiles.add(`${slugifyFileName(markdownFile)}`)
-      })
-    } else if (path.endsWith(".md")) {
-      const fileName = dirEntry.name as `${string}.md`
-      const fileNameWithoutExtension = fileName.slice(0, -3)
-      const filePath = `${directoryPath}/${fileName}` as const
-      const fileText = await Deno.readTextFile(filePath)
-      if (
-        !isCriteriaMet({
-          fileName,
-          fileNameWithoutExtension,
-          filePath,
-          fileText,
-        })
-      )
-        continue
-      markdownFiles.add(`${slugifyFileName(dirEntry.name.slice(0, -3))}`)
-    }
-  }
-  return markdownFiles
-}
-
-export async function getMarkdownFilePaths(
-  directoryPath: string
-): Promise<Set<string>> {
-  const markdownFiles = new Set<string>()
-  for await (const dirEntry of Deno.readDir(directoryPath)) {
-    const path = `${directoryPath}/${dirEntry.name}`
-    if (dirEntry.isDirectory) {
-      const subDirectoryMarkdownFiles = await getMarkdownFilePaths(path)
-      subDirectoryMarkdownFiles.forEach((markdownFile) => {
-        markdownFiles.add(markdownFile)
-      })
-    } else if (path.endsWith(".md")) {
-      const fileName = dirEntry.name as `${string}.md`
-      const fileNameWithoutExtension = fileName.slice(0, -3)
-      const filePath = `${directoryPath}/${fileName}` as const
-      const fileText = await Deno.readTextFile(filePath)
-      if (
-        !isCriteriaMet({
-          fileName,
-          fileNameWithoutExtension,
-          filePath,
-          fileText,
-        })
-      )
-        continue
-      markdownFiles.add(filePath)
-    }
-  }
-  return markdownFiles
-}
 
 export async function getMarkdownFileSummaries(
   directoryPath: string
@@ -77,10 +14,9 @@ export async function getMarkdownFileSummaries(
       } else if (entryPath.endsWith(".md")) {
         const fileName = dirEntry.name as `${string}.md`
         const fileNameWithoutExtension = fileName.slice(0, -3)
-        const filePath = `${path}/${fileName}` satisfies `${string}.md`
+        const filePath = `${path}/${fileName}` as const
         const fileText = await Deno.readTextFile(filePath)
         const slug = slugifyFileName(fileNameWithoutExtension)
-        // if (!isCriteriaMet({ filePath, fileText })) continue
         markdownFiles.set(slug, {
           fileName,
           fileNameWithoutExtension,
@@ -94,16 +30,41 @@ export async function getMarkdownFileSummaries(
   return markdownFiles
 }
 
+export async function getMarkdownFileSlugs(
+  directoryPath: string,
+  isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
+): Promise<Set<string>> {
+  const summaries = await getMarkdownFileSummaries(directoryPath)
+  const slugs = new Set<string>()
+  for (const [slug, summary] of summaries) {
+    if (isCriteriaMet && !isCriteriaMet(summary)) continue
+    slugs.add(slug)
+  }
+  return slugs
+}
+
+export async function getMarkdownFilePaths(
+  directoryPath: string,
+  isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
+): Promise<Set<string>> {
+  const summaries = await getMarkdownFileSummaries(directoryPath)
+  const filePaths = new Set<string>()
+  for (const [, summary] of summaries) {
+    if (isCriteriaMet && !isCriteriaMet(summary)) continue
+    filePaths.add(summary.filePath)
+  }
+  return filePaths
+}
+
 export async function getImageFiles(
   directoryPath: string
 ): Promise<Set<string>> {
-  const filePaths = await getMarkdownFilePaths(directoryPath)
+  const summaries = await getMarkdownFileSummaries(directoryPath)
   const imageFiles = new Set<string>()
-  for (const filePath of filePaths) {
-    const fileText = await Deno.readTextFile(filePath)
-    const wikilinkRegex = /\[\[(.+?)\]\]/g
+  const wikilinkRegex = /\[\[(.+?)\]\]/g
+  for (const [, summary] of summaries) {
     let match
-    while ((match = wikilinkRegex.exec(fileText)) !== null) {
+    while ((match = wikilinkRegex.exec(summary.fileText)) !== null) {
       imageFiles.add(match[1])
     }
   }
