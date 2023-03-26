@@ -1,4 +1,5 @@
-import { isCriteriaMet, MarkdownFileSummary } from "./isCriteriaMet.ts"
+import { MarkdownFileSummary, Slug } from "../types.d.ts"
+import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { slugifyFileName } from "./slugifyFileName.ts"
 
 export async function getMarkdownFileSlugs(
@@ -63,7 +64,6 @@ export async function getMarkdownFilePaths(
   return markdownFiles
 }
 
-type Slug = string
 export async function getMarkdownFileSummaries(
   directoryPath: string
 ): Promise<Map<Slug, MarkdownFileSummary>> {
