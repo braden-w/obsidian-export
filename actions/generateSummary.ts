@@ -34,14 +34,12 @@ export async function generateSummary() {
         const originalWikilinkTitle = match[1]
         const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
         const linkedFileData = markdownFiles.get(wikilinkSlug)
-        if (markdownFiles.has(wikilinkSlug)) {
-          const linkedFileData = markdownFiles.get(wikilinkSlug)
+        if (linkedFileData) {
+          const { fileName, fileNameWithoutExtension, filePath, content } =
+            linkedFileData
+          if (!isCriteriaMet({ filePath, fileText: content })) continue
           const summaryLine = `[${originalWikilinkTitle}](${wikilinkSlug})\n`
           await appendToFile(summaryFilePath, summaryLine)
-          console.log(
-            "🚀 ~ file: generateSummary.ts:43 ~ generateSummary ~ summaryLine:",
-            summaryLine
-          )
         }
       }
     }
