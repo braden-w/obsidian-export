@@ -24,10 +24,14 @@ export async function obsidianExport(
 
     // Now we know it's a markdown file
     const fileName = dirEntry.name as `${string}.md`
+    const fileNameWithoutExtension = fileName.slice(0, -3)
     const filePath = `${inputDir}/${fileName}` as const
     const fileText = await Deno.readTextFile(filePath)
 
-    if (!isCriteriaMet({ filePath, fileText })) continue
+    if (
+      !isCriteriaMet({ fileName, fileNameWithoutExtension, filePath, fileText })
+    )
+      continue
 
     const processedText = processText(
       fileText,
