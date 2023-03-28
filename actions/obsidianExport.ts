@@ -9,7 +9,7 @@ export async function obsidianExport(
   allMarkdownSlugifiedFiles?: Set<string>
 ) {
   if (!allMarkdownSlugifiedFiles)
-    allMarkdownSlugifiedFiles = await getMarkdownFileSlugs(inputDir)
+    allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
 
   for await (const dirEntry of Deno.readDir(inputDir)) {
     if (dirEntry.isDirectory) {

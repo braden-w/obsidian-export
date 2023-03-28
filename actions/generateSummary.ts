@@ -5,10 +5,9 @@
 import { getMarkdownFileSummaries } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
-import { contentDirectory } from "../mod.ts"
 
 export async function generateSummary() {
-  const markdownFiles = await getMarkdownFileSummaries(contentDirectory)
+  const markdownFiles = await getMarkdownFileSummaries()
   const summaryFilePath =
     "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/journals/summary.md"
 

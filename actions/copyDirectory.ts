@@ -5,7 +5,7 @@ export async function copyDirectory(
   outputDir: string,
   allImageFiles: Set<string> | null = null
 ) {
-  if (allImageFiles === null) allImageFiles = await getImageFiles(inputDir)
+  if (allImageFiles === null) allImageFiles = await getImageFiles()
   const inputFiles = await Deno.readDir(inputDir)
 
   for await (const file of inputFiles) {

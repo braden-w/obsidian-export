@@ -1,9 +1,11 @@
+import { contentDirectory } from "../mod.ts"
 import { Slug, MarkdownFileSummary } from "../types.d.ts"
+import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { slugifyFileName } from "./slugifyFileName.ts"
 
-export async function getMarkdownFileSummaries(
-  directoryPath: string
-): Promise<Map<Slug, MarkdownFileSummary>> {
+export async function getMarkdownFileSummaries(): Promise<
+  Map<Slug, MarkdownFileSummary>
+> {
   const markdownFiles = new Map<Slug, MarkdownFileSummary>()
 
   async function traverseDirectory(path: string) {
@@ -37,15 +39,14 @@ export async function getMarkdownFileSummaries(
     return fileName.slice(0, -3)
   }
 
-  await traverseDirectory(directoryPath)
+  await traverseDirectory(contentDirectory)
   return markdownFiles
 }
 
 export async function getMarkdownFileSlugs(
-  directoryPath: string,
   isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
 ): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries(directoryPath)
+  const summaries = await getMarkdownFileSummaries()
   const slugs = new Set<string>()
   for (const [slug, summary] of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
@@ -55,10 +56,9 @@ export async function getMarkdownFileSlugs(
 }
 
 export async function getMarkdownFilePaths(
-  directoryPath: string,
   isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
 ): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries(directoryPath)
+  const summaries = await getMarkdownFileSummaries()
   const filePaths = new Set<string>()
   for (const [, summary] of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
@@ -67,13 +67,12 @@ export async function getMarkdownFilePaths(
   return filePaths
 }
 
-export async function getImageFiles(
-  directoryPath: string
-): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries(directoryPath)
+export async function getImageFiles(): Promise<Set<string>> {
+  const summaries = await getMarkdownFileSummaries()
   const imageFiles = new Set<string>()
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   for (const [, summary] of summaries) {
+    if (!isCriteriaMet(summary)) continue
     let match
     while ((match = wikilinkRegex.exec(summary.fileText)) !== null) {
       imageFiles.add(match[1])
