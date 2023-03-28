@@ -22,7 +22,7 @@ export async function generateSummary() {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
   )
-    .map(([slug, { fileNameWithoutExtension, fileText }]) => {
+    .map(([_slug, { fileNameWithoutExtension, fileText }]) => {
       const fileNameDate = fileNameWithoutExtension
       if (isDateInRange(fileNameDate)) {
         const wikilinkRegex = /\[\[(.+?)\]\]/g
