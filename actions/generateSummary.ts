@@ -5,7 +5,9 @@
 import { getMarkdownFileSummaries } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
+import { MarkdownFileSummary } from "../types.d.ts"
 
+const markdownFileSummariesInRange: MarkdownFileSummary[] = []
 export async function generateSummary() {
   const markdownFiles = await getMarkdownFileSummaries()
   const summaryFilePath =
@@ -20,10 +22,6 @@ export async function generateSummary() {
     return fileDate >= sevenDaysAgo && fileDate <= today
   }
 
-  async function appendToFile(filePath: string, fileText: string) {
-    await Deno.writeTextFile(filePath, fileText, { append: true })
-  }
-
   for (const [slug, fileData] of markdownFiles.entries()) {
     const fileNameDate = fileData.filePath.split("/").pop().slice(0, -3)
     if (isDateInRange(fileNameDate)) {
@@ -35,12 +33,18 @@ export async function generateSummary() {
         const linkedFileData = markdownFiles.get(wikilinkSlug)
         if (linkedFileData) {
           if (!isCriteriaMet(linkedFileData)) continue
-          const summaryLine = `[${originalWikilinkTitle}](${wikilinkSlug})\n`
-          await appendToFile(summaryFilePath, summaryLine)
+          // const summaryLine = `[${originalWikilinkTitle}](${wikilinkSlug})\n`
+          // await appendToFile(summaryFilePath, summaryLine)
+          markdownFileSummariesInRange.push(linkedFileData)
         }
       }
     }
   }
 }
 
-generateSummary()
+await generateSummary()
+console.log(markdownFileSummariesInRange)
+
+async function appendToFile(filePath: string, fileText: string) {
+  await Deno.writeTextFile(filePath, fileText, { append: true })
+}
