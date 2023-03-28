@@ -7,11 +7,8 @@ import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
-const markdownFileSummariesInRange: MarkdownFileSummary[] = []
 export async function generateSummary() {
   const markdownFiles = await getMarkdownFileSummaries()
-  const summaryFilePath =
-    "/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/journals/summary.md"
 
   function isDateInRange(dateString: string): boolean {
     const fileDate = new Date(dateString)
@@ -41,7 +38,7 @@ export async function generateSummary() {
       }
       return null
     })
-    .filter((data) => data !== null)
+    .filter((data): data is MarkdownFileSummary => data !== null)
   return markdownFileSummariesInRange
 }
 
