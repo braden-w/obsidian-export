@@ -3,27 +3,17 @@
  */
 
 import { getMarkdownFileSummaries } from "../helpers/fileUtils.ts"
-import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
 export async function generateSummary() {
   const markdownFiles = await getMarkdownFileSummaries()
 
-  function isDateInRange(dateString: string): boolean {
-    const fileDate = new Date(dateString)
-    const today = new Date()
-    const sevenDaysAgo = new Date(today)
-    sevenDaysAgo.setDate(today.getDate() - 7)
-
-    return fileDate >= sevenDaysAgo && fileDate <= today
-  }
-
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
   )
     .map(([_slug, { fileNameWithoutExtension, fileText }]) => {
-      if (isDateInRange(fileNameWithoutExtension)) {
+      if (isFileNameWithinLastSevenDays(fileNameWithoutExtension)) {
         const wikilinkRegex = /\[\[(.+?)\]\]/g
         let match
         while ((match = wikilinkRegex.exec(fileText)) !== null) {
@@ -42,6 +32,22 @@ export async function generateSummary() {
 }
 
 console.log(await generateSummary())
+
+function isFileNameWithinLastSevenDays(
+  fileNameWithoutExtension: string
+): boolean {
+  const now = new Date()
+  const date = new Date(fileNameWithoutExtension)
+
+  // Calculate the difference between the two dates in milliseconds
+  const diffInMs = now.getTime() - date.getTime()
+
+  // Calculate the number of milliseconds in 7 days
+  const msIn7Days = 7 * 24 * 60 * 60 * 1000
+
+  // If the difference is less than the number of milliseconds in 7 days, return true
+  return diffInMs <= msIn7Days
+}
 
 async function appendToFile(filePath: string, fileText: string) {
   await Deno.writeTextFile(filePath, fileText, { append: true })
