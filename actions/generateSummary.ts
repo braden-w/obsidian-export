@@ -22,12 +22,12 @@ export async function generateSummary() {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
   )
-    .map(([slug, fileData]) => {
-      const fileNameDate = fileData.fileNameWithoutExtension
+    .map(([slug, { fileNameWithoutExtension, fileText }]) => {
+      const fileNameDate = fileNameWithoutExtension
       if (isDateInRange(fileNameDate)) {
         const wikilinkRegex = /\[\[(.+?)\]\]/g
         let match
-        while ((match = wikilinkRegex.exec(fileData.fileText)) !== null) {
+        while ((match = wikilinkRegex.exec(fileText)) !== null) {
           const originalWikilinkTitle = match[1]
           const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
           const linkedFileData = markdownFiles.get(wikilinkSlug)
