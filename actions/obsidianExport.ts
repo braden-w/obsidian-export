@@ -27,9 +27,16 @@ export async function obsidianExport(
     const fileNameWithoutExtension = fileName.slice(0, -3)
     const filePath = `${inputDir}/${fileName}` as const
     const fileText = await Deno.readTextFile(filePath)
+    const slug = slugifyFileName(fileNameWithoutExtension)
 
     if (
-      !isCriteriaMet({ fileName, fileNameWithoutExtension, filePath, fileText })
+      !isCriteriaMet({
+        slug,
+        fileName,
+        fileNameWithoutExtension,
+        filePath,
+        fileText,
+      })
     )
       continue
 
@@ -38,7 +45,6 @@ export async function obsidianExport(
       fileName.slice(0, -3),
       allMarkdownSlugifiedFiles
     )
-    const slugifiedFileName = `${slugifyFileName(fileName.slice(0, -3))}.md`
-    await Deno.writeTextFile(`${outputDir}/${slugifiedFileName}`, processedText)
+    await Deno.writeTextFile(`${outputDir}/${slug}`, processedText)
   }
 }
