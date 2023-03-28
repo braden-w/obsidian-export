@@ -27,6 +27,7 @@ export async function getMarkdownFileSummaries(): Promise<
       const fileText = await Deno.readTextFile(filePath)
       const slug = slugifyFileName(fileNameWithoutExtension)
       markdownFiles.set(slug, {
+        slug,
         fileName,
         fileNameWithoutExtension,
         filePath,
