@@ -22,28 +22,30 @@ export async function generateSummary() {
     return fileDate >= sevenDaysAgo && fileDate <= today
   }
 
-  for (const [slug, fileData] of markdownFiles.entries()) {
-    const fileNameDate = fileData.filePath.split("/").pop().slice(0, -3)
-    if (isDateInRange(fileNameDate)) {
-      const wikilinkRegex = /\[\[(.+?)\]\]/g
-      let match
-      while ((match = wikilinkRegex.exec(fileData.fileText)) !== null) {
-        const originalWikilinkTitle = match[1]
-        const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
-        const linkedFileData = markdownFiles.get(wikilinkSlug)
-        if (linkedFileData) {
-          if (!isCriteriaMet(linkedFileData)) continue
-          // const summaryLine = `[${originalWikilinkTitle}](${wikilinkSlug})\n`
-          // await appendToFile(summaryFilePath, summaryLine)
-          markdownFileSummariesInRange.push(linkedFileData)
+  const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
+    markdownFiles
+  )
+    .map(([slug, fileData]) => {
+      const fileNameDate = fileData.fileNameWithoutExtension
+      if (isDateInRange(fileNameDate)) {
+        const wikilinkRegex = /\[\[(.+?)\]\]/g
+        let match
+        while ((match = wikilinkRegex.exec(fileData.fileText)) !== null) {
+          const originalWikilinkTitle = match[1]
+          const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
+          const linkedFileData = markdownFiles.get(wikilinkSlug)
+          if (linkedFileData) {
+            return linkedFileData
+          }
         }
       }
-    }
-  }
+      return null
+    })
+    .filter((data) => data !== null)
+  return markdownFileSummariesInRange
 }
 
-await generateSummary()
-console.log(markdownFileSummariesInRange)
+console.log(await generateSummary())
 
 async function appendToFile(filePath: string, fileText: string) {
   await Deno.writeTextFile(filePath, fileText, { append: true })
