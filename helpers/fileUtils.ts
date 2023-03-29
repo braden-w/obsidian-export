@@ -3,9 +3,8 @@ import { Slug, MarkdownFileSummary } from "../types.d.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { slugifyFileName } from "./slugifyFileName.ts"
 
-export async function getMarkdownFileSummaries(): Promise<
-  Map<Slug, MarkdownFileSummary>
-> {
+export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
+export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
   const markdownFiles = new Map<Slug, MarkdownFileSummary>()
 
   async function traverseDirectory(path: string) {
