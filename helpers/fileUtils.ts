@@ -35,10 +35,6 @@ export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries>
     }
   }
 
-  function removeFileExtension(fileName: string): string {
-    return fileName.slice(0, -3)
-  }
-
   await traverseDirectory(contentDirectory)
   return markdownFiles
 }
@@ -79,4 +75,8 @@ export async function getImageFiles(): Promise<Set<string>> {
     }
   }
   return imageFiles
+}
+
+export function removeFileExtension(fileName: string): string {
+  return fileName.slice(0, -3)
 }
