@@ -29,18 +29,16 @@ export async function generateSummary() {
 console.log(await generateSummary())
 
 /**
- * Checks if a given file name represents a date that is within the past 7 days.
- * The file name should be in the format 'YYYY-MM-DD' or a parsable date string.
+ * Checks if a given name represents a date that is within the past 7 days.
+ * The name should be in the format 'YYYY-MM-DD'.
  *
- * @param {string} fileNameWithoutExtension - The file name without the extension.
+ * @param {string} dateString - A string in YYYY-MM-DD forat
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
-function isFileNameWithinLastSevenDays(
-  fileNameWithoutExtension: string
-): boolean {
+function isWithinLastSevenDays( dateString: string): boolean {
   const now = new Date()
-  const date = new Date(fileNameWithoutExtension)
+  const date = new Date(dateString)
   const diffInMs = now.getTime() - date.getTime()
   const msIn7Days = 7 * 24 * 60 * 60 * 1000
   return diffInMs <= msIn7Days
