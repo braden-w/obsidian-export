@@ -54,16 +54,12 @@ function extractNotesFromDailyNote(
   { fileText }: MarkdownFileSummary,
   markdownFiles: MarkdownFileSummaries
 ) {
-  const result = []
   const wikilinkRegex = /\[\[(.+?)\]\]/g
-  let match
-  while ((match = wikilinkRegex.exec(fileText)) !== null) {
+  return Array.from(fileText.matchAll(wikilinkRegex), (match) => {
     const originalWikilinkTitle = match[1]
     const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
     const linkedFileData = markdownFiles.get(wikilinkSlug)
-    if (linkedFileData) {
-      result.push(linkedFileData)
-    }
-  }
-  return result
+
+    return linkedFileData
+  }).filter(Boolean)
 }
