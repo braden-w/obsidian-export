@@ -2,7 +2,10 @@
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
 
-import { getMarkdownFileSummaries } from "../helpers/fileUtils.ts"
+import {
+  getMarkdownFileSummaries,
+  MarkdownFileSummaries,
+} from "../helpers/fileUtils.ts"
 import { slugifyFileName } from "../helpers/slugifyFileName.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
@@ -12,18 +15,10 @@ export async function generateSummary() {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
   )
-    .map(([_slug, { fileNameWithoutExtension, fileText }]) => {
+    .map(([_slug, markdownFileSummary]) => {
+      const { fileNameWithoutExtension } = markdownFileSummary
       if (isFileNameWithinLastSevenDays(fileNameWithoutExtension)) {
-        const wikilinkRegex = /\[\[(.+?)\]\]/g
-        let match
-        while ((match = wikilinkRegex.exec(fileText)) !== null) {
-          const originalWikilinkTitle = match[1]
-          const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
-          const linkedFileData = markdownFiles.get(wikilinkSlug)
-          if (linkedFileData) {
-            return linkedFileData
-          }
-        }
+        return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
       }
       return null
     })
@@ -53,4 +48,20 @@ function isFileNameWithinLastSevenDays(
 
 async function appendToFile(filePath: string, fileText: string) {
   await Deno.writeTextFile(filePath, fileText, { append: true })
+}
+
+function extractNotesFromDailyNote(
+  { fileText }: MarkdownFileSummary,
+  markdownFiles: MarkdownFileSummaries
+) {
+  const wikilinkRegex = /\[\[(.+?)\]\]/g
+  let match
+  while ((match = wikilinkRegex.exec(fileText)) !== null) {
+    const originalWikilinkTitle = match[1]
+    const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
+    const linkedFileData = markdownFiles.get(wikilinkSlug)
+    if (linkedFileData) {
+      return linkedFileData
+    }
+  }
 }
