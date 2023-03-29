@@ -6,7 +6,7 @@ import {
   getMarkdownFileSummaries,
   MarkdownFileSummaries,
 } from "../helpers/fileUtils.ts"
-import { slugifyFileName } from "../helpers/slugifyFileName.ts"
+import { slugifyFileName } from "../helpers/markdownUtils.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
 export async function generateSummary() {

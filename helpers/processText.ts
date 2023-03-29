@@ -1,4 +1,4 @@
-import { slugifyFileName } from "./slugifyFileName.ts"
+import { slugifyFileName } from "./markdownUtils.ts"
 
 export function processText(
   text: string,

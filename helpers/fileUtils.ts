@@ -1,7 +1,7 @@
 import { contentDirectory } from "../mod.ts"
 import { Slug, MarkdownFileSummary } from "../types.d.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
-import { slugifyFileName } from "./slugifyFileName.ts"
+import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
 export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
 export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
@@ -68,26 +68,4 @@ export async function getImageFiles(): Promise<Set<string>> {
     }
   }
   return imageFiles
-}
-
-export function removeFileExtension(fileName: string): string {
-  return fileName.slice(0, -3)
-}
-
-export async function getMarkdownFileSummary(
-  entryPath: `${string}/${string}.md`,
-  entryName: string
-): Promise<MarkdownFileSummary> {
-  const fileName = entryName as `${string}.md`
-  const fileNameWithoutExtension = removeFileExtension(fileName)
-  const filePath = entryPath
-  const fileText = await Deno.readTextFile(filePath)
-  const slug = slugifyFileName(fileNameWithoutExtension)
-  return {
-    slug,
-    fileName,
-    fileNameWithoutExtension,
-    filePath,
-    fileText,
-  }
 }

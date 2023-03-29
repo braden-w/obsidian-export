@@ -1,8 +1,6 @@
-import {
-  getMarkdownFileSlugs,
-  getMarkdownFileSummary,
-} from "../helpers/fileUtils.ts"
+import { getMarkdownFileSlugs } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { getMarkdownFileSummary } from "../helpers/markdownUtils.ts"
 import { processText } from "../helpers/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
