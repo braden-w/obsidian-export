@@ -4,6 +4,6 @@ export type MarkdownFileSummary = {
   slug: Slug
   fileName: `${string}.md`
   fileNameWithoutExtension: string
-  filePath: `${string}.md`
+  filePath: `${string}/${string}.md`
   fileText: string
 }

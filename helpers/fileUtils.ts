@@ -20,18 +20,11 @@ export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries>
 
   async function processFileEntry(entryPath: string, entryName: string) {
     if (entryPath.endsWith(".md")) {
-      const fileName = entryName as `${string}.md`
-      const fileNameWithoutExtension = removeFileExtension(fileName)
-      const filePath = entryPath as `${string}.md`
-      const fileText = await Deno.readTextFile(filePath)
-      const slug = slugifyFileName(fileNameWithoutExtension)
-      markdownFiles.set(slug, {
-        slug,
-        fileName,
-        fileNameWithoutExtension,
-        filePath,
-        fileText,
-      })
+      const markdownSummary = await getMarkdownFileSummary(
+        entryPath as `${string}/${string}.md`,
+        entryName
+      )
+      markdownFiles.set(markdownSummary.slug, markdownSummary)
     }
   }
 
@@ -79,4 +72,22 @@ export async function getImageFiles(): Promise<Set<string>> {
 
 export function removeFileExtension(fileName: string): string {
   return fileName.slice(0, -3)
+}
+
+export async function getMarkdownFileSummary(
+  entryPath: `${string}/${string}.md`,
+  entryName: string
+): Promise<MarkdownFileSummary> {
+  const fileName = entryName as `${string}.md`
+  const fileNameWithoutExtension = removeFileExtension(fileName)
+  const filePath = entryPath
+  const fileText = await Deno.readTextFile(filePath)
+  const slug = slugifyFileName(fileNameWithoutExtension)
+  return {
+    slug,
+    fileName,
+    fileNameWithoutExtension,
+    filePath,
+    fileText,
+  }
 }
