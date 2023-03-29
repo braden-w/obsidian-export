@@ -17,9 +17,16 @@ export async function generateSummary() {
   )
     .map(([_slug, markdownFileSummary]) => {
       const { fileNameWithoutExtension } = markdownFileSummary
-      if (isFileNameWithinLastSevenDays(fileNameWithoutExtension)) {
+      const date = getDate(markdownFileSummary)
+      const dateModified = getDateModified(markdownFileSummary)
+      if (isWithinLastSevenDays(fileNameWithoutExtension)) {
         return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
+      } else if (date && isWithinLastSevenDays(date)) {
+        return markdownFileSummary
+      } else if (dateModified && isWithinLastSevenDays(dateModified)) {
+        return markdownFileSummary
       }
+
       return null
     })
     .filter((data): data is MarkdownFileSummary => data !== null)
@@ -36,7 +43,7 @@ console.log(await generateSummary())
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
-function isWithinLastSevenDays( dateString: string): boolean {
+function isWithinLastSevenDays(dateString: string): boolean {
   const now = new Date()
   const date = new Date(dateString)
   const diffInMs = now.getTime() - date.getTime()
@@ -60,4 +67,24 @@ function extractNotesFromDailyNote(
 
     return linkedFileData
   }).filter(Boolean)
+}
+
+function getDate({ fileText }: MarkdownFileSummary): string | null {
+  const regex = /date: (\d{4}-\d{2}-\d{2})/
+  const match = fileText.match(regex)
+  if (match && match[1]) {
+    return match[1]
+  } else {
+    return null
+  }
+}
+
+function getDateModified({ fileText }: MarkdownFileSummary): string | null {
+  const regex = /date modified: (\d{4}-\d{2}-\d{2})/
+  const match = fileText.match(regex)
+  if (match && match[1]) {
+    return match[1]
+  } else {
+    return null
+  }
 }
