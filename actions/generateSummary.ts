@@ -16,10 +16,9 @@ export async function generateSummary() {
     markdownFiles
   )
     .map(([_slug, markdownFileSummary]) => {
-      const { fileNameWithoutExtension } = markdownFileSummary
       const date = getDate(markdownFileSummary)
       const dateModified = getDateModified(markdownFileSummary)
-      if (isWithinLastSevenDays(fileNameWithoutExtension)) {
+      if (isDailyNoteWithinLastSevenDays(markdownFileSummary)) {
         return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
       } else if (date && isWithinLastSevenDays(date)) {
         return markdownFileSummary
@@ -87,4 +86,13 @@ function getDateModified({ fileText }: MarkdownFileSummary): string | null {
   } else {
     return null
   }
+}
+
+function isDailyNoteWithinLastSevenDays(
+  markdownFileSummary: MarkdownFileSummary
+) {
+  const { fileNameWithoutExtension } = markdownFileSummary
+  // If the file name is in the format YYYY-MM-DD, then it's a daily note
+  if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
+  return isWithinLastSevenDays(fileNameWithoutExtension)
 }
