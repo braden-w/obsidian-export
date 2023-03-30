@@ -1,14 +1,12 @@
 /**
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
-
-import { parse } from "https://deno.land/x/frontmatter/mod.ts"
 import {
   getMarkdownFileSummaries,
   MarkdownFileSummaries,
 } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { articleSchema, slugifyFileName } from "../helpers/markdownUtils.ts"
+import { getArticleData, slugifyFileName } from "../helpers/markdownUtils.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
 export async function generateSummary() {
@@ -71,21 +69,13 @@ function extractNotesFromDailyNote(
   }).filter(Boolean)
 }
 
-function getArticleData({ fileText, fileName }: MarkdownFileSummary) {
-  try {
-    const { data } = parse(fileText)
-    const dataParsed = articleSchema.parse(data)
-    return { data: dataParsed }
-  } catch (error) {
-    return { error: { fileName, message: error.message } }
-  }
-}
-
 function isDailyNoteWithinLastSevenDays(
   markdownFileSummary: MarkdownFileSummary
 ) {
   const { fileNameWithoutExtension } = markdownFileSummary
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
-  return isWithinLastSevenDays(fileNameWithoutExtension)
+  // Convert fileNameWithoutExtension to a Date object
+  const dateFileName = new Date(fileNameWithoutExtension)
+  return isWithinLastSevenDays(dateFileName)
 }

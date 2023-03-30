@@ -1,5 +1,7 @@
-import { MarkdownFileSummary, Slug } from "../types.d.ts"
+import { parse } from "https://deno.land/x/frontmatter/mod.ts"
 import { z } from "https://deno.land/x/zod/mod.ts"
+
+import { MarkdownFileSummary, Slug } from "../types.d.ts"
 
 export const articleSchema = z.object({
   title: z.string().optional(),
@@ -34,6 +36,16 @@ export async function getMarkdownFileSummary(
     fileNameWithoutExtension,
     filePath,
     fileText,
+  }
+}
+
+export function getArticleData({ fileText, fileName }: MarkdownFileSummary) {
+  try {
+    const { data } = parse(fileText)
+    const dataParsed = articleSchema.parse(data)
+    return { data: dataParsed }
+  } catch (error) {
+    return { error: { fileName, message: error.message } }
   }
 }
 
