@@ -42,7 +42,7 @@ console.log(await generateSummary())
  * Checks if a given name represents a date that is within the past 7 days.
  * The name should be in the format 'YYYY-MM-DD'.
  *
- * @param {string} dateString - A string in YYYY-MM-DD forat
+ * @param {string} dateString - A string in YYYY-MM-DD format
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
