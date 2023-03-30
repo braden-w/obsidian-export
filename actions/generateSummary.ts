@@ -16,9 +16,18 @@ async function main() {
   const output = summaries.map(createSummaryLink).join("\n")
   // Create a file name in the form `Summary of Posts from ${7 days ago} to ${today}.md`
   const today = new Date()
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-  const fileName = `Summary of Posts from ${sevenDaysAgo.toDateString()} to ${today.toDateString()}.md`
+  const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  } satisfies Intl.DateTimeFormatOptions
+  const todayFormatted = today.toLocaleDateString("en-US", options)
+  const sevenDaysAgoFormatted = sevenDaysAgo.toLocaleDateString(
+    "en-US",
+    options
+  )
+  const fileName = `Summary of Posts from ${sevenDaysAgoFormatted} to ${todayFormatted}.md`
   await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
