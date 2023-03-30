@@ -1,15 +1,35 @@
 /**
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
+import { BASE_URL } from "../constants.ts"
 import {
   getMarkdownFileSummaries,
   MarkdownFileSummaries,
 } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { getArticleData, slugifyFileName } from "../helpers/markdownUtils.ts"
+import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
-export async function generateSummary() {
+async function main() {
+  const summaries = await generateSummary()
+  const output = summaries.map(createSummaryLink).join("\n")
+  // Create a file name in the form `Summary of Posts from ${7 days ago} to ${today}.md`
+  const today = new Date()
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  const fileName = `Summary of Posts from ${sevenDaysAgo.toDateString()} to ${today.toDateString()}.md`
+  await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
+}
+
+function createSummaryLink(summary: MarkdownFileSummary): string {
+  const { fileNameWithoutExtension, slug } = summary
+  return `- [${fileNameWithoutExtension}](${BASE_URL}/${slug})`
+}
+
+main()
+
+async function generateSummary() {
   const markdownFiles = await getMarkdownFileSummaries()
 
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
@@ -33,8 +53,6 @@ export async function generateSummary() {
     .filter((data): data is MarkdownFileSummary => data !== null)
   return markdownFileSummariesInRange
 }
-
-console.log(await generateSummary())
 
 /**
  * Checks if a given name represents a date that is within the past 7 days.
