@@ -13,21 +13,62 @@ import { MarkdownFileSummary } from "../types.d.ts"
 
 async function main() {
   const summaries = await generateSummary()
-  const output = summaries.map(createSummaryLink).join("\n")
+  const sectionTitles = [
+    "Noteworthy",
+    "Media",
+    "Reflections",
+    "Everything Else",
+  ] as const
+  const sections = new Map<
+    (typeof sectionTitles)[number],
+    MarkdownFileSummary[]
+  >(sectionTitles.map((title) => [title, []]))
+
+  for (const summary of summaries) {
+    const frontmatter = getArticleData(summary).data
+    const resonance = frontmatter?.resonance
+    const tags = frontmatter?.tags
+    const reflectionsTags = ["Reflection", "Thought"]
+    const mediaTags = ["Tweet", "Video", "Image", "Article"]
+
+    if (!resonance) continue
+    if (resonance > 80) {
+      sections.get("Noteworthy")!.push(summary)
+    }
+    if (tags?.some((tag) => reflectionsTags.includes(tag))) {
+      sections.get("Reflections")!.push(summary)
+    } else if (tags?.some((tag) => mediaTags.includes(tag))) {
+      sections.get("Media")!.push(summary)
+    } else {
+      sections.get("Everything Else")!.push(summary)
+    }
+  }
+
+  const sortedSections = new Map(
+    Array.from(sections.entries()).map(([sectionName, summaries]) => [
+      sectionName,
+      summaries.sort((a, b) => {
+        const dataA = getArticleData(a).data
+        const dataB = getArticleData(b).data
+        return (dataB?.resonance ?? 0) - (dataA?.resonance ?? 0)
+      }),
+    ])
+  )
+
+  const output = Array.from(sortedSections.entries())
+    .map(([key, sectionSummaries]) => {
+      return `# ${key}\n${sectionSummaries.map(createSummaryLink).join("\n")}\n`
+    })
+    .join("")
   // Create a file name in the form `Summary of Posts from ${7 days ago} to ${today}.md`
   const today = new Date()
-  const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
   const options = {
     year: "numeric",
     month: "long",
     day: "numeric",
   } satisfies Intl.DateTimeFormatOptions
   const todayFormatted = today.toLocaleDateString("en-US", options)
-  const sevenDaysAgoFormatted = sevenDaysAgo.toLocaleDateString(
-    "en-US",
-    options
-  )
-  const fileName = `Summary of Posts from ${sevenDaysAgoFormatted} to ${todayFormatted}.md`
+  const fileName = `Musings—Stuff that Came Up On ${todayFormatted}.md`
   await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
