@@ -1,7 +1,7 @@
 /**
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
-import { BASE_URL } from "../constants.ts"
+import { BASE_URL, N_DAYS } from "../constants.ts"
 import {
   getMarkdownFileSummaries,
   MarkdownFileSummaries,
@@ -90,11 +90,11 @@ async function generateSummary() {
       const { data, error } = getArticleData(markdownFileSummary)
       if (error) return null
       const { date, "date modified": dateModified } = data
-      if (isDailyNoteWithinLastSevenDays(markdownFileSummary)) {
+      if (isDailyNoteWithinLastNDays(markdownFileSummary, N_DAYS)) {
         return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
-      } else if (date && isWithinLastSevenDays(date)) {
+      } else if (date && isWithinLastNDays(date, N_DAYS)) {
         return markdownFileSummary
-      } else if (dateModified && isWithinLastSevenDays(dateModified)) {
+      } else if (dateModified && isWithinLastNDays(dateModified, N_DAYS)) {
         return markdownFileSummary
       }
 
@@ -112,10 +112,10 @@ async function generateSummary() {
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
-function isWithinLastSevenDays(date: Date): boolean {
+function isWithinLastNDays(date: Date, numberOfDays: number): boolean {
   const now = new Date()
   const diffInMs = now.getTime() - date.getTime()
-  const msIn7Days = 7 * 24 * 60 * 60 * 1000
+  const msIn7Days = numberOfDays * 24 * 60 * 60 * 1000
   return diffInMs <= msIn7Days
 }
 
@@ -137,13 +137,14 @@ function extractNotesFromDailyNote(
   }).filter(Boolean)
 }
 
-function isDailyNoteWithinLastSevenDays(
-  markdownFileSummary: MarkdownFileSummary
+function isDailyNoteWithinLastNDays(
+  markdownFileSummary: MarkdownFileSummary,
+  numberOfDays: number
 ) {
   const { fileNameWithoutExtension } = markdownFileSummary
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
   // Convert fileNameWithoutExtension to a Date object
   const dateFileName = new Date(fileNameWithoutExtension)
-  return isWithinLastSevenDays(dateFileName)
+  return isWithinLastNDays(dateFileName, numberOfDays)
 }
