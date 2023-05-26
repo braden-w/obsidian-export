@@ -1,3 +1,4 @@
+import { generateDailyActivitySummary } from "./actions/generateSummary.ts"
 import {
   copyReferencedImageFiles,
   obsidianExport,
@@ -26,3 +27,5 @@ copyReferencedImageFiles({
   outputDir: assetsOutputDirectory,
   referencedImageFiles,
 })
+
+generateDailyActivitySummary({ markdownFileSummaries })

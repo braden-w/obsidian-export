@@ -1,5 +1,5 @@
 /**
- * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
+ * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFileSummaries (you'll need to slugify the wikilink context first and then fetch the content from markdownFileSummaries). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
 import { writeTextFile } from "../bridge/denoBridge.ts"
 import { BASE_URL, N_DAYS } from "../constants.ts"
@@ -9,10 +9,13 @@ import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
 import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
-import { getMarkdownFileSummaries } from "../helpers/collection/getMarkdownFileSummaries.ts"
 
-async function main() {
-  const summaries = await generateSummary()
+export async function generateDailyActivitySummary({
+  markdownFileSummaries,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
+  const summaries = await generateSummary({ markdownFileSummaries })
   const sectionTitles = [
     "Noteworthy",
     "Media",
@@ -77,13 +80,13 @@ function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
   return `- [${fileNameWithoutExtension}](${BASE_URL}/${slug})`
 }
 
-main()
-
-async function generateSummary() {
-  const markdownFiles = await getMarkdownFileSummaries()
-
+function generateSummary({
+  markdownFileSummaries,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
-    markdownFiles
+    markdownFileSummaries
   )
     .map((markdownFileSummary) => {
       if (!isCriteriaMet(markdownFileSummary)) return null
@@ -91,7 +94,10 @@ async function generateSummary() {
       if (error) return null
       const { date, "date modified": dateModified } = data
       if (isDailyNoteWithinLastNDays(markdownFileSummary, N_DAYS)) {
-        return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
+        return extractNotesFromDailyNote(
+          markdownFileSummary,
+          markdownFileSummaries
+        )
       } else if (date && isWithinLastNDays(date, N_DAYS)) {
         return markdownFileSummary
       } else if (dateModified && isWithinLastNDays(dateModified, N_DAYS)) {
@@ -125,14 +131,14 @@ async function appendToFile(filePath: string, fileText: string) {
 
 function extractNotesFromDailyNote(
   { fileText }: MarkdownFileSummary,
-  markdownFiles: MarkdownFileSummary[]
+  markdownFileSummaries: MarkdownFileSummary[]
 ) {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return Array.from(fileText.matchAll(wikilinkRegex), (match) => {
     const originalWikilinkTitle = match[1]
     const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
     const linkedFileData = findMarkdownFileWithMatchingSlug({
-      markdownFiles,
+      markdownFileSummaries,
       slug: wikilinkSlug,
     })
 
@@ -141,13 +147,15 @@ function extractNotesFromDailyNote(
 }
 
 function findMarkdownFileWithMatchingSlug({
-  markdownFiles,
+  markdownFileSummaries,
   slug,
 }: {
-  markdownFiles: MarkdownFileSummary[]
+  markdownFileSummaries: MarkdownFileSummary[]
   slug: string
 }) {
-  return markdownFiles.find((markdownFile) => markdownFile.slug === slug)
+  return markdownFileSummaries.find(
+    (markdownFile) => markdownFile.slug === slug
+  )
 }
 
 function isDailyNoteWithinLastNDays(
