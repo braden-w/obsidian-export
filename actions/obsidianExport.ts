@@ -18,20 +18,19 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
   }
 
   async function processFileEntry(entryPath: string, entryName: string) {
-    if (entryPath.endsWith(".md")) {
-      const markdownSummary = await getMarkdownFileSummary(
-        entryPath as `${string}/${string}.md`,
-        entryName
-      )
-      if (!isCriteriaMet(markdownSummary)) return
-      const { slug, fileText, fileNameWithoutExtension } = markdownSummary
-      const processedText = processText(
-        fileText,
-        fileNameWithoutExtension,
-        allMarkdownSlugifiedFiles
-      )
-      await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
-    }
+    if (!entryPath.endsWith(".md")) return
+    const markdownSummary = await getMarkdownFileSummary(
+      entryPath as `${string}/${string}.md`,
+      entryName
+    )
+    if (!isCriteriaMet(markdownSummary)) return
+    const { slug, fileText, fileNameWithoutExtension } = markdownSummary
+    const processedText = processText(
+      fileText,
+      fileNameWithoutExtension,
+      allMarkdownSlugifiedFiles
+    )
+    await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
 
   traverseDirectory(inputDir)
