@@ -15,9 +15,18 @@ import {
 import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
 import { processText } from "../helpers/markdown/processText.ts"
+import { MarkdownFileSummary } from "../types.d.ts"
 
-export async function obsidianExport(inputDir: string, outputDir: string) {
-  const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
+export function obsidianExport({
+  inputDir,
+  outputDir,
+  markdownFileSummaries,
+}: {
+  inputDir: string
+  outputDir: string
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
+  const markdownFileSlugs = getMarkdownFileSlugs({ markdownFileSummaries })
 
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
     if (!fileName.endsWith(".md")) return
@@ -26,10 +35,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
       fileName: fileName as `${string}.md`,
     })
     if (!isCriteriaMet(markdownSummary)) return
-    const processedText = processText(
-      markdownSummary,
-      allMarkdownSlugifiedFiles
-    )
+    const processedText = processText(markdownSummary, markdownFileSlugs)
     const { slug } = markdownSummary
     await writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
@@ -37,12 +43,19 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
   applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
 
-export async function copyDirectory(
-  inputDir: string,
-  outputDir: string,
-  allImageFiles: Set<string> | null = null
-) {
-  if (allImageFiles === null) allImageFiles = await getImageFiles()
+export async function copyDirectory({
+  inputDir,
+  outputDir,
+  markdownFileSummaries,
+  allImageFiles = null,
+}: {
+  inputDir: string
+  outputDir: string
+  markdownFileSummaries: MarkdownFileSummary[]
+  allImageFiles?: Set<string> | null
+}) {
+  if (allImageFiles === null)
+    allImageFiles = getImageFiles({ markdownFileSummaries })
   const inputFiles = readDir(inputDir)
 
   for await (const file of inputFiles) {
@@ -53,7 +66,12 @@ export async function copyDirectory(
       await copyFile(src, dest)
     } else if (file.isDirectory) {
       await mkdir(dest)
-      await copyDirectory(src, dest, allImageFiles)
+      await copyDirectory({
+        inputDir: src,
+        outputDir: dest,
+        markdownFileSummaries,
+        allImageFiles,
+      })
     }
   }
 }

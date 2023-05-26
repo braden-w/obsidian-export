@@ -1,25 +1,30 @@
 import { MarkdownFileSummary } from "../../types.d.ts"
 import { isCriteriaMet } from "../markdown/isCriteriaMet.ts"
-import { getMarkdownFileSummaries } from "./getMarkdownFileSummaries.ts"
 
-export async function getMarkdownFileSlugs(
+export function getMarkdownFileSlugs({
+  markdownFileSummaries,
+  isCriteriaMet,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
   isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
-): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries()
+}): Set<string> {
   const slugs = new Set<string>()
-  for (const summary of summaries) {
+  for (const summary of markdownFileSummaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
     slugs.add(summary.slug)
   }
   return slugs
 }
 
-export async function getMarkdownFilePaths(
+export function getMarkdownFilePaths({
+  markdownFileSummaries,
+  isCriteriaMet,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
   isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
-): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries()
+}): Set<string> {
   const filePaths = new Set<string>()
-  for (const summary of summaries) {
+  for (const summary of markdownFileSummaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
     const filePath = `${summary.dirPath}/${summary.fileName}`
     filePaths.add(filePath)
@@ -27,11 +32,14 @@ export async function getMarkdownFilePaths(
   return filePaths
 }
 
-export async function getImageFiles(): Promise<Set<string>> {
-  const summaries = await getMarkdownFileSummaries()
+export function getImageFiles({
+  markdownFileSummaries,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+}): Set<string> {
   const imageFiles = new Set<string>()
   const wikilinkRegex = /\[\[(.+?)\]\]/g
-  for (const summary of summaries) {
+  for (const summary of markdownFileSummaries) {
     if (!isCriteriaMet(summary)) continue
     let match
     while ((match = wikilinkRegex.exec(summary.fileText)) !== null) {
