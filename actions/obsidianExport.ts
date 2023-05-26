@@ -6,6 +6,7 @@ import {
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
 import { processText } from "../helpers/markdown/processText.ts"
+import { writeTextFile } from "../helpers/file/writeTextFile.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
@@ -22,7 +23,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
       allMarkdownSlugifiedFiles
     )
     const { slug } = markdownSummary
-    await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
+    await writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
 
   applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })

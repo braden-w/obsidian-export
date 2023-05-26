@@ -6,6 +6,7 @@ import {
   SlugToSummaryMap,
   getSlugToSummaryMap,
 } from "../helpers/collection/slugToSummaryMap.ts"
+import { writeTextFile } from "../helpers/file/writeTextFile.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import {
@@ -73,7 +74,7 @@ async function main() {
   } satisfies Intl.DateTimeFormatOptions
   const todayFormatted = today.toLocaleDateString("en-US", options)
   const fileName = `Musings—Stuff that Came Up On ${todayFormatted}.md`
-  await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
+  await writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
 function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
@@ -124,7 +125,7 @@ function isWithinLastNDays(date: Date, numberOfDays: number): boolean {
 }
 
 async function appendToFile(filePath: string, fileText: string) {
-  await Deno.writeTextFile(filePath, fileText, { append: true })
+  await writeTextFile(filePath, fileText, { append: true })
 }
 
 function extractNotesFromDailyNote(
