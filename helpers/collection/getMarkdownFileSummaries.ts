@@ -1,5 +1,5 @@
 import { contentDirectory } from "../../mod.ts"
-import { Slug, MarkdownFileSummary } from "../../types.d.ts"
+import { MarkdownFileSummary } from "../../types.d.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
@@ -7,7 +7,9 @@ import {
 import { generateMarkdownFileSummary } from "../markdown/generateMarkdownFileSummary.ts"
 
 /** Returns a array of MarkdownFileSummary objects. */
-export async function getSlugToSummaryMap(): Promise<MarkdownFileSummary[]> {
+export async function getMarkdownFileSummaries(): Promise<
+  MarkdownFileSummary[]
+> {
   const markdownFileSummaries: MarkdownFileSummary[] = []
 
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {

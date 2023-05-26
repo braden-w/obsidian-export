@@ -3,13 +3,13 @@
  */
 import { writeTextFile } from "../bridge/denoBridge.ts"
 import { BASE_URL, N_DAYS } from "../constants.ts"
-import { getSlugToSummaryMap } from "../helpers/collection/slugToSummaryMap.ts"
 import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
 import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
+import { getMarkdownFileSummaries } from "../helpers/collection/getMarkdownFileSummaries.ts"
 
 async function main() {
   const summaries = await generateSummary()
@@ -80,7 +80,7 @@ function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
 main()
 
 async function generateSummary() {
-  const markdownFiles = await getSlugToSummaryMap()
+  const markdownFiles = await getMarkdownFileSummaries()
 
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
