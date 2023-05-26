@@ -6,6 +6,7 @@ export type ProcessFileFn = ({
   fileName: string
 }) => Promise<void>
 
+/** Applies a function to each file in a directory, recursively. */
 export async function applyToFilesRecursive({
   dirPath,
   processFileFn,
