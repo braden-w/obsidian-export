@@ -5,17 +5,17 @@ import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
 export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
 export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
-  const markdownFiles = new Map<Slug, MarkdownFileSummary>()
-  async function processFileEntry(entryPath: string, entryName: string) {
-    if (!entryPath.endsWith(".md")) return
+  const markdownSlugToSummaries = new Map<Slug, MarkdownFileSummary>()
+  async function processFileEntry(filePath: string, fileName: string) {
+    if (!filePath.endsWith(".md")) return
     const markdownSummary = await getMarkdownFileSummary(
-      entryPath as `${string}/${string}.md`,
-      entryName
+      filePath as `${string}/${string}.md`,
+      fileName
     )
-    markdownFiles.set(markdownSummary.slug, markdownSummary)
+    markdownSlugToSummaries.set(markdownSummary.slug, markdownSummary)
   }
   await applyToFilesRecursive(contentDirectory, processFileEntry)
-  return markdownFiles
+  return markdownSlugToSummaries
 }
 
 export async function getMarkdownFileSlugs(
@@ -57,18 +57,15 @@ export async function getImageFiles(): Promise<Set<string>> {
 }
 
 export async function applyToFilesRecursive(
-  path: string,
-  fileProcessingFunction: (
-    entryPath: string,
-    entryName: string
-  ) => Promise<void>
+  dirPath: string,
+  processFileFn: (filePath: string, fileName: string) => Promise<void>
 ) {
-  for await (const dirEntry of Deno.readDir(path)) {
-    const entryPath = `${path}/${dirEntry.name}` as const
+  for await (const dirEntry of Deno.readDir(dirPath)) {
+    const entryPath = `${dirPath}/${dirEntry.name}` as const
     if (dirEntry.isDirectory) {
-      await applyToFilesRecursive(entryPath, fileProcessingFunction)
+      await applyToFilesRecursive(entryPath, processFileFn)
     } else {
-      await fileProcessingFunction(entryPath, dirEntry.name)
+      await processFileFn(entryPath, dirEntry.name)
     }
   }
 }
