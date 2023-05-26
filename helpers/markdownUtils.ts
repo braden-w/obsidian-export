@@ -21,7 +21,7 @@ export const articleSchema = z.object({
   "link-github": z.string().url().nullable(),
 })
 
-export async function getMarkdownFileSummary({
+export async function generateMarkdownFileSummary({
   entryPath,
   entryName,
 }: {

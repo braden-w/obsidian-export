@@ -4,7 +4,7 @@ import {
   applyToFilesRecursive,
 } from "../helpers/fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { getMarkdownFileSummary } from "../helpers/markdownUtils.ts"
+import { generateMarkdownFileSummary } from "../helpers/markdownUtils.ts"
 import { processText } from "../helpers/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
@@ -12,7 +12,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
 
   const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
     if (!filePath.endsWith(".md")) return
-    const markdownSummary = await getMarkdownFileSummary({
+    const markdownSummary = await generateMarkdownFileSummary({
       entryPath: filePath as `${string}/${string}.md`,
       entryName: fileName,
     })
