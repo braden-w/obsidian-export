@@ -1,4 +1,5 @@
 import { obsidianExport, copyDirectory } from "./actions/obsidianExport.ts"
+import { getReferencedImageFiles } from "./helpers/collection/derivedSets.ts"
 import { getMarkdownFileSummaries } from "./helpers/collection/getMarkdownFileSummaries.ts"
 
 export const contentDirectory =
@@ -16,8 +17,10 @@ obsidianExport({
   outputDir: contentOutputDirectory,
   markdownFileSummaries,
 })
+const allImageFiles = getReferencedImageFiles({ markdownFileSummaries })
 await copyDirectory({
   inputDir: assetsDirectory,
   outputDir: assetsOutputDirectory,
   markdownFileSummaries,
+  allImageFiles,
 })

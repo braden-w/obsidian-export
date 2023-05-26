@@ -43,35 +43,25 @@ export function obsidianExport({
   applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
 
-export async function copyDirectory({
+export function copyDirectory({
   inputDir,
   outputDir,
   markdownFileSummaries,
-  allImageFiles = null,
+  allImageFiles,
 }: {
   inputDir: string
   outputDir: string
   markdownFileSummaries: MarkdownFileSummary[]
-  allImageFiles?: Set<string> | null
+  allImageFiles: Set<string>
 }) {
-  if (allImageFiles === null)
-    allImageFiles = getReferencedImageFiles({ markdownFileSummaries })
-  const inputFiles = readDir(inputDir)
+  const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
+    const src = `${dirPath}/${fileName}`
+    const dest = `${outputDir}/${fileName.replace(/ /g, "-")}`
 
-  for await (const file of inputFiles) {
-    const src = `${inputDir}/${file.name}`
-    const dest = `${outputDir}/${file.name.replace(/ /g, "-")}`
-
-    if (file.isFile && allImageFiles.has(file.name)) {
+    if (allImageFiles.has(fileName)) {
       await copyFile(src, dest)
-    } else if (file.isDirectory) {
-      await mkdir(dest)
-      await copyDirectory({
-        inputDir: src,
-        outputDir: dest,
-        markdownFileSummaries,
-        allImageFiles,
-      })
     }
   }
+
+  applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
