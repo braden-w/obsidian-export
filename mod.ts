@@ -21,6 +21,5 @@ const allImageFiles = getReferencedImageFiles({ markdownFileSummaries })
 await copyDirectory({
   inputDir: assetsDirectory,
   outputDir: assetsOutputDirectory,
-  markdownFileSummaries,
   allImageFiles,
 })

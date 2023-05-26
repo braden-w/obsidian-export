@@ -46,12 +46,10 @@ export function obsidianExport({
 export function copyDirectory({
   inputDir,
   outputDir,
-  markdownFileSummaries,
   allImageFiles,
 }: {
   inputDir: string
   outputDir: string
-  markdownFileSummaries: MarkdownFileSummary[]
   allImageFiles: Set<string>
 }) {
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
