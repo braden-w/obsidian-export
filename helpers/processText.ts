@@ -10,16 +10,18 @@ export function processText({
   allMarkdownSlugifiedFiles: Set<string>
 }) {
   const textEmbedsFixed = replaceWikiEmbedMdEmbed(text)
+  const textLinksFixed = replaceWikiLinksMdLinks({
+    stringWithWikilinks: textEmbedsFixed,
+    allMarkdownSlugifiedFiles,
+  })
   return addTitleToSecondLine({
-    text: wikilinksToLinks({
-      stringWithWikilinks: textEmbedsFixed,
-      allMarkdownSlugifiedFiles,
-    }),
+    text: textLinksFixed,
     title,
   })
 }
 
-function wikilinksToLinks({
+/** Function that replaces `[[Some Page]]` with `[Some Page](/articles/some-page)` */
+function replaceWikiLinksMdLinks({
   stringWithWikilinks,
   allMarkdownSlugifiedFiles,
 }: {
