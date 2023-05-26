@@ -36,7 +36,6 @@ export async function generateMarkdownFileSummary({
   return {
     slug,
     fileName,
-    fileNameWithoutExtension,
     filePath,
     fileText,
   }
@@ -54,13 +53,11 @@ export function getArticleData({ fileText, fileName }: MarkdownFileSummary) {
 
 export function removeFileExtension(
   fileName: MarkdownFileSummary["fileName"]
-): MarkdownFileSummary["fileNameWithoutExtension"] {
+): string {
   return fileName.slice(0, -3)
 }
 
-export const slugifyFileName = (
-  fileName: MarkdownFileSummary["fileNameWithoutExtension"]
-): Slug =>
+export const slugifyFileName = (fileName: string): Slug =>
   fileName
     .trim()
     .replace(/[\s-—]+/g, "-")

@@ -4,7 +4,10 @@ import {
   applyToFilesRecursive,
 } from "../helpers/fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { generateMarkdownFileSummary } from "../helpers/markdownUtils.ts"
+import {
+  generateMarkdownFileSummary,
+  removeFileExtension,
+} from "../helpers/markdownUtils.ts"
 import { processText } from "../helpers/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
@@ -17,7 +20,8 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
       entryName: fileName,
     })
     if (!isCriteriaMet(markdownSummary)) return
-    const { slug, fileText, fileNameWithoutExtension } = markdownSummary
+    const { slug, fileText, fileName: mdFileName } = markdownSummary
+    const fileNameWithoutExtension = removeFileExtension(mdFileName)
     const processedText = processText({
       text: fileText,
       title: fileNameWithoutExtension,
