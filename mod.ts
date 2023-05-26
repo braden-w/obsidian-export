@@ -14,7 +14,7 @@ const assetsDirectory =
 const assetsOutputDirectory =
   "/Users/braden/Code/optim/apps/blog-sveltekit/public/assets"
 
-const markdownFileSummaries = await getMarkdownFileSummaries()
+const markdownFileSummaries = await getMarkdownFileSummaries(contentDirectory)
 obsidianExport({
   inputDir: contentDirectory,
   outputDir: contentOutputDirectory,

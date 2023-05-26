@@ -1,4 +1,3 @@
-import { contentDirectory } from "../../mod.ts"
 import { MarkdownFileSummary } from "../../types.d.ts"
 import {
   ProcessFileFn,
@@ -7,9 +6,9 @@ import {
 import { generateMarkdownFileSummary } from "../markdown/generateMarkdownFileSummary.ts"
 
 /** Returns a array of MarkdownFileSummary objects. */
-export async function getMarkdownFileSummaries(): Promise<
-  MarkdownFileSummary[]
-> {
+export async function getMarkdownFileSummaries(
+  contentDirectory: string
+): Promise<MarkdownFileSummary[]> {
   const markdownFileSummaries: MarkdownFileSummary[] = []
 
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
