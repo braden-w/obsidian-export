@@ -1,17 +1,16 @@
 /**
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
+import { writeTextFile } from "../bridge/denoBridge.ts"
 import { BASE_URL, N_DAYS } from "../constants.ts"
 import {
   SlugToSummaryMap,
   getSlugToSummaryMap,
 } from "../helpers/collection/slugToSummaryMap.ts"
-import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
-import {
-  removeFileExtension,
-  slugifyFileName,
-} from "../helpers/markdownUtils.ts"
+import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
+import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
@@ -73,7 +72,7 @@ async function main() {
   } satisfies Intl.DateTimeFormatOptions
   const todayFormatted = today.toLocaleDateString("en-US", options)
   const fileName = `Musings—Stuff that Came Up On ${todayFormatted}.md`
-  await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
+  await writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
 function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
@@ -124,7 +123,7 @@ function isWithinLastNDays(date: Date, numberOfDays: number): boolean {
 }
 
 async function appendToFile(filePath: string, fileText: string) {
-  await Deno.writeTextFile(filePath, fileText, { append: true })
+  await writeTextFile(filePath, fileText, { append: true })
 }
 
 function extractNotesFromDailyNote(

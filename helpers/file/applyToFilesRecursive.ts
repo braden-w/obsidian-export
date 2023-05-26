@@ -1,3 +1,5 @@
+import { readDir } from "../../bridge/denoBridge.ts"
+
 export type ProcessFileFn = ({
   dirPath,
   fileName,
@@ -14,7 +16,7 @@ export async function applyToFilesRecursive({
   dirPath: string
   processFileFn: ProcessFileFn
 }) {
-  for await (const dirEntry of Deno.readDir(dirPath)) {
+  for await (const dirEntry of readDir(dirPath)) {
     if (dirEntry.isDirectory) {
       await applyToFilesRecursive({
         dirPath: `${dirPath}/${dirEntry.name}`,

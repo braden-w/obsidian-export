@@ -1,5 +1,6 @@
 import { MarkdownFileSummary } from "../../types.d.ts"
-import { removeFileExtension, slugifyFileName } from "../markdownUtils.ts"
+import { removeFileExtension } from "./removeFileExtension.ts"
+import { slugifyFileName } from "./slugifyFileName.ts"
 
 /** Function that takes in a file from Obsidian and returns a file that can be used in my blog */
 export function processText(

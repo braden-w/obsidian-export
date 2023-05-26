@@ -3,7 +3,7 @@ import { z } from "https://deno.land/x/zod/mod.ts"
 
 import { MarkdownFileSummary } from "../../types.d.ts"
 
-export const articleSchema = z.object({
+const articleSchema = z.object({
   title: z.string().optional(),
   alias: z.string().nullable(),
   tags: z

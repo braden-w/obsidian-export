@@ -1,6 +1,6 @@
-import { MarkdownFileSummary } from "../types.d.ts"
-import { getSlugToSummaryMap } from "./collection/slugToSummaryMap.ts"
-import { isCriteriaMet } from "./isCriteriaMet.ts"
+import { MarkdownFileSummary } from "../../types.d.ts"
+import { isCriteriaMet } from "../markdown/isCriteriaMet.ts"
+import { getSlugToSummaryMap } from "./slugToSummaryMap.ts"
 
 export async function getMarkdownFileSlugs(
   isCriteriaMet?: (summary: MarkdownFileSummary) => boolean
