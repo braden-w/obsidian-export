@@ -32,7 +32,8 @@ export function getMarkdownFilePaths({
   return filePaths
 }
 
-export function getImageFiles({
+/** Returns a set of all image files referenced in the markdown files. */
+export function getReferencedImageFiles({
   markdownFileSummaries,
 }: {
   markdownFileSummaries: MarkdownFileSummary[]

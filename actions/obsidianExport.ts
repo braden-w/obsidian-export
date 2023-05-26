@@ -5,7 +5,7 @@ import {
   readDir,
 } from "../bridge/denoBridge.ts"
 import {
-  getImageFiles,
+  getReferencedImageFiles,
   getMarkdownFileSlugs,
 } from "../helpers/collection/derivedSets.ts"
 import {
@@ -55,7 +55,7 @@ export async function copyDirectory({
   allImageFiles?: Set<string> | null
 }) {
   if (allImageFiles === null)
-    allImageFiles = getImageFiles({ markdownFileSummaries })
+    allImageFiles = getReferencedImageFiles({ markdownFileSummaries })
   const inputFiles = readDir(inputDir)
 
   for await (const file of inputFiles) {
