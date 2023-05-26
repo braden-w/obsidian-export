@@ -23,12 +23,11 @@ export const articleSchema = z.object({
 
 export async function generateMarkdownFileSummary({
   entryPath,
-  entryName,
+  fileName,
 }: {
   entryPath: `${string}/${string}.md`
-  entryName: string
+  fileName: `${string}.md`
 }): Promise<MarkdownFileSummary> {
-  const fileName = entryName as `${string}.md`
   const fileNameWithoutExtension = removeFileExtension(fileName)
   const filePath = entryPath
   const fileText = await Deno.readTextFile(filePath)

@@ -41,7 +41,7 @@ async function addMarkdownFileToSlugToSummaryMap({
 }) {
   const markdownSummary = await generateMarkdownFileSummary({
     entryPath: filePath as `${string}/${string}.md`,
-    entryName: fileName,
+    fileName: fileName as `${string}.md`,
   })
   map.set(markdownSummary.slug, markdownSummary)
 }
