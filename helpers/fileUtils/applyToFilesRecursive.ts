@@ -1,8 +1,8 @@
 export type ProcessFileFn = ({
-  filePath,
+  dirPath,
   fileName,
 }: {
-  filePath: string
+  dirPath: string
   fileName: string
 }) => Promise<void>
 
@@ -15,11 +15,13 @@ export async function applyToFilesRecursive({
   processFileFn: ProcessFileFn
 }) {
   for await (const dirEntry of Deno.readDir(dirPath)) {
-    const entryPath = `${dirPath}/${dirEntry.name}` as const
     if (dirEntry.isDirectory) {
-      await applyToFilesRecursive({ dirPath: entryPath, processFileFn })
+      await applyToFilesRecursive({
+        dirPath: `${dirPath}/${dirEntry.name}`,
+        processFileFn,
+      })
     } else {
-      await processFileFn({ filePath: entryPath, fileName: dirEntry.name })
+      await processFileFn({ dirPath, fileName: dirEntry.name })
     }
   }
 }

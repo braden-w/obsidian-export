@@ -36,7 +36,7 @@ export async function generateMarkdownFileSummary({
   return {
     slug,
     fileName,
-    filePath,
+    dirPath: removeFileExtension(entryPath),
     fileText,
   }
 }

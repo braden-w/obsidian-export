@@ -13,10 +13,11 @@ import { processText } from "../helpers/processText.ts"
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
 
-  const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
-    if (!filePath.endsWith(".md")) return
+  const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
+    if (!fileName.endsWith(".md")) return
+    const entryPath = `${dirPath}/${fileName}` as `${string}/${string}.md`
     const markdownSummary = await generateMarkdownFileSummary({
-      entryPath: filePath as `${string}/${string}.md`,
+      entryPath,
       entryName: fileName,
     })
     if (!isCriteriaMet(markdownSummary)) return

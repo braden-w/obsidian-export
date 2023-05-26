@@ -13,8 +13,9 @@ export type SlugToSummaryMap = Map<Slug, MarkdownFileSummary>
 export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
   const slugToSummaryMap: SlugToSummaryMap = new Map()
 
-  const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
-    if (!filePath.endsWith(".md")) return
+  const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
+    if (!dirPath.endsWith(".md")) return
+    const filePath = `${dirPath}/${fileName}`
     await addMarkdownFileToSlugToSummaryMap({
       file: { filePath, fileName },
       map: slugToSummaryMap,
@@ -64,7 +65,8 @@ export async function getMarkdownFilePaths(
   const filePaths = new Set<string>()
   for (const [, summary] of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
-    filePaths.add(summary.filePath)
+    const filePath = `${summary.dirPath}/${summary.fileName}`
+    filePaths.add(filePath)
   }
   return filePaths
 }
