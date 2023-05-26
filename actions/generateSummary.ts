@@ -4,7 +4,11 @@
 import { BASE_URL, N_DAYS } from "../constants.ts"
 import { getSlugToSummaryMap, SlugToSummaryMap } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { getArticleData, slugifyFileName } from "../helpers/markdownUtils.ts"
+import {
+  getArticleData,
+  removeFileExtension,
+  slugifyFileName,
+} from "../helpers/markdownUtils.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
@@ -69,8 +73,8 @@ async function main() {
   await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
-function createSummaryLink(summary: MarkdownFileSummary): string {
-  const { fileNameWithoutExtension, slug } = summary
+function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
+  const fileNameWithoutExtension = removeFileExtension(fileName)
   return `- [${fileNameWithoutExtension}](${BASE_URL}/${slug})`
 }
 
@@ -138,7 +142,8 @@ function isDailyNoteWithinLastNDays(
   markdownFileSummary: MarkdownFileSummary,
   numberOfDays: number
 ) {
-  const { fileNameWithoutExtension } = markdownFileSummary
+  const { fileName } = markdownFileSummary
+  const fileNameWithoutExtension = removeFileExtension(fileName)
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
   // Convert fileNameWithoutExtension to a Date object
