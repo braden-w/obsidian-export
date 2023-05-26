@@ -6,29 +6,15 @@ import { getMarkdownFileSummary } from "./markdownUtils.ts"
 export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
 export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
   const markdownFiles = new Map<Slug, MarkdownFileSummary>()
-
-  async function traverseDirectory(path: string) {
-    for await (const dirEntry of Deno.readDir(path)) {
-      const entryPath = `${path}/${dirEntry.name}` as const
-      if (dirEntry.isDirectory) {
-        await traverseDirectory(entryPath)
-      } else {
-        await processFileEntry(entryPath, dirEntry.name)
-      }
-    }
-  }
-
   async function processFileEntry(entryPath: string, entryName: string) {
-    if (entryPath.endsWith(".md")) {
-      const markdownSummary = await getMarkdownFileSummary(
-        entryPath as `${string}/${string}.md`,
-        entryName
-      )
-      markdownFiles.set(markdownSummary.slug, markdownSummary)
-    }
+    if (!entryPath.endsWith(".md")) return
+    const markdownSummary = await getMarkdownFileSummary(
+      entryPath as `${string}/${string}.md`,
+      entryName
+    )
+    markdownFiles.set(markdownSummary.slug, markdownSummary)
   }
-
-  await traverseDirectory(contentDirectory)
+  await processFilesInFolder(contentDirectory, processFileEntry)
   return markdownFiles
 }
 
@@ -68,4 +54,21 @@ export async function getImageFiles(): Promise<Set<string>> {
     }
   }
   return imageFiles
+}
+
+export async function processFilesInFolder(
+  path: string,
+  fileProcessingFunction: (
+    entryPath: string,
+    entryName: string
+  ) => Promise<void>
+) {
+  for await (const dirEntry of Deno.readDir(path)) {
+    const entryPath = `${path}/${dirEntry.name}` as const
+    if (dirEntry.isDirectory) {
+      await processFilesInFolder(entryPath)
+    } else {
+      await processFileEntry(entryPath, dirEntry.name)
+    }
+  }
 }
