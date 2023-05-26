@@ -2,7 +2,7 @@
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
 import { BASE_URL, N_DAYS } from "../constants.ts"
-import { getSlugToSummaryMap, SlugToSummaryMap } from "../helpers/fileUtils.ts"
+import { SlugToSummaryMap, getSlugToSummaryMap } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import {
   getArticleData,

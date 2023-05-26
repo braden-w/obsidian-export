@@ -1,14 +1,11 @@
 import { contentDirectory } from "../mod.ts"
-import { Slug, MarkdownFileSummary } from "../types.d.ts"
+import { MarkdownFileSummary, Slug } from "../types.d.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
 } from "./fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
-import {
-  generateMarkdownFileSummary,
-  removeFileExtension,
-} from "./markdownUtils.ts"
+import { generateMarkdownFileSummary } from "./markdownUtils.ts"
 
 export type SlugToSummaryMap = Map<Slug, MarkdownFileSummary>
 
