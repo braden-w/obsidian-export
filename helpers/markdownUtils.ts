@@ -22,20 +22,19 @@ export const articleSchema = z.object({
 })
 
 export async function generateMarkdownFileSummary({
-  entryPath,
+  filePath,
   fileName,
 }: {
-  entryPath: `${string}/${string}.md`
+  filePath: `${string}/${string}.md`
   fileName: `${string}.md`
 }): Promise<MarkdownFileSummary> {
   const fileNameWithoutExtension = removeFileExtension(fileName)
-  const filePath = entryPath
   const fileText = await Deno.readTextFile(filePath)
   const slug = slugifyFileName(fileNameWithoutExtension)
   return {
     slug,
     fileName,
-    dirPath: removeFileExtension(entryPath),
+    dirPath: removeFileExtension(filePath),
     fileText,
   }
 }
