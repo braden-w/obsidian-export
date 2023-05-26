@@ -1,19 +1,16 @@
-import { slugifyFileName } from "./markdownUtils.ts"
+import { MarkdownFileSummary } from "../types.d.ts"
+import { removeFileExtension, slugifyFileName } from "./markdownUtils.ts"
 
-export function processText({
-  text,
-  title,
-  allMarkdownSlugifiedFiles,
-}: {
-  text: string
-  title: string
+export function processText(
+  { fileName, fileText }: MarkdownFileSummary,
   allMarkdownSlugifiedFiles: Set<string>
-}) {
-  const textEmbedsFixed = replaceWikiEmbedMdEmbed(text)
+) {
+  const textEmbedsFixed = replaceWikiEmbedMdEmbed(fileText)
   const textLinksFixed = replaceWikiLinksMdLinks({
     stringWithWikilinks: textEmbedsFixed,
     allMarkdownSlugifiedFiles,
   })
+  const title = removeFileExtension(fileName)
   const textWithTitleFrontmatter = addTitleToSecondLine({
     text: textLinksFixed,
     title,

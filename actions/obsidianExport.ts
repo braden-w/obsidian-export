@@ -20,13 +20,11 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
       fileName: fileName as `${string}.md`,
     })
     if (!isCriteriaMet(markdownSummary)) return
-    const { slug, fileText, fileName: mdFileName } = markdownSummary
-    const fileNameWithoutExtension = removeFileExtension(mdFileName)
-    const processedText = processText({
-      text: fileText,
-      title: fileNameWithoutExtension,
-      allMarkdownSlugifiedFiles,
-    })
+    const processedText = processText(
+      markdownSummary,
+      allMarkdownSlugifiedFiles
+    )
+    const { slug } = markdownSummary
     await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
 
