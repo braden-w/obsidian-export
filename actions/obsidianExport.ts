@@ -1,4 +1,4 @@
-import { copyFile, writeTextFile } from "../bridge/denoBridge.ts"
+import { copyFile, writeTextFile } from "../helpers/bridge/denoBridge.ts"
 import { getMarkdownFileSlugs } from "../helpers/collection/derivedSets.ts"
 import {
   ProcessFileFn,
