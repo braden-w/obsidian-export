@@ -1,5 +1,5 @@
-import { readTextFile } from "../../bridge/denoBridge.ts"
 import { MarkdownFileSummary } from "../../types.d.ts"
+import { readTextFile } from "../bridge/denoBridge.ts"
 import { removeFileExtension } from "./removeFileExtension.ts"
 import { slugifyFileName } from "./slugifyFileName.ts"
 

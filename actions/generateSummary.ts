@@ -1,14 +1,14 @@
 /**
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFileSummaries (you'll need to slugify the wikilink context first and then fetch the content from markdownFileSummaries). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
-import { writeTextFile } from "../bridge/denoBridge.ts"
-import { BASE_URL, N_DAYS } from "../constants.ts"
-import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
+import { writeTextFile } from "../helpers/bridge/denoBridge.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
 import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
+import { BASE_URL, N_DAYS } from "./generateSummary/constants.ts"
 
 export async function generateDailyActivitySummary({
   markdownFileSummaries,
