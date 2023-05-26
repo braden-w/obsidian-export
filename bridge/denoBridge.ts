@@ -17,3 +17,7 @@ export async function mkdir(path: string) {
 export function readDir(path: string) {
   return Deno.readDir(path)
 }
+
+export function readTextFile(path: string) {
+  return Deno.readTextFile(path)
+}
