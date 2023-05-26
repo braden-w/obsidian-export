@@ -1,19 +1,11 @@
-import {
-  writeTextFile,
-  copyFile,
-  mkdir,
-  readDir,
-} from "../bridge/denoBridge.ts"
-import {
-  getReferencedImageFiles,
-  getMarkdownFileSlugs,
-} from "../helpers/collection/derivedSets.ts"
+import { copyFile, writeTextFile } from "../bridge/denoBridge.ts"
+import { getMarkdownFileSlugs } from "../helpers/collection/derivedSets.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
 } from "../helpers/file/applyToFilesRecursive.ts"
-import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { processText } from "../helpers/markdown/processText.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
@@ -43,20 +35,21 @@ export function obsidianExport({
   applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
 
-export function copyDirectory({
+/** Copy all image files referenced in markdown files to the output directory */
+export function copyReferencedImageFiles({
   inputDir,
   outputDir,
-  allImageFiles,
+  referencedImageFiles,
 }: {
   inputDir: string
   outputDir: string
-  allImageFiles: Set<string>
+  referencedImageFiles: Set<string>
 }) {
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
     const src = `${dirPath}/${fileName}`
     const dest = `${outputDir}/${fileName.replace(/ /g, "-")}`
 
-    if (allImageFiles.has(fileName)) {
+    if (referencedImageFiles.has(fileName)) {
       await copyFile(src, dest)
     }
   }
