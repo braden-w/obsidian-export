@@ -9,9 +9,10 @@ export function processText({
   title: string
   allMarkdownSlugifiedFiles: Set<string>
 }) {
+  const textEmbedsFixed = replaceWikiEmbedMdEmbed(text)
   return addTitleToSecondLine({
     text: wikilinksToLinks({
-      stringWithWikilinks: embedLinksToLinks(text),
+      stringWithWikilinks: textEmbedsFixed,
       allMarkdownSlugifiedFiles,
     }),
     title,
@@ -52,9 +53,10 @@ function wikilinksToLinks({
   })
 }
 
-function embedLinksToLinks(stringWithEmbedLinks: string): string {
+/** Function that replaces `![[Some Image]]` with `![Some Image](/assets/some-image)` */
+function replaceWikiEmbedMdEmbed(text: string): string {
   const embedLinkRegex = /!\[\[(.+?)\]\]/g
-  return stringWithEmbedLinks.replace(embedLinkRegex, (s: string) => {
+  return text.replace(embedLinkRegex, (s: string) => {
     if (!s) return ""
     const match = s.match(/!\[\[(.+?)\]\]/)
     if (match) {
