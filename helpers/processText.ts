@@ -10,7 +10,7 @@ export function processText({
   allMarkdownSlugifiedFiles: Set<string>
 }) {
   return addTitleToSecondLine({
-    inputString: wikilinksToLinks({
+    text: wikilinksToLinks({
       stringWithWikilinks: embedLinksToLinks(text),
       allMarkdownSlugifiedFiles,
     }),
@@ -68,13 +68,13 @@ function embedLinksToLinks(stringWithEmbedLinks: string): string {
 
 // Function that adds `title: ${title}` to the second line of the string
 function addTitleToSecondLine({
-  inputString,
+  text,
   title,
 }: {
-  inputString: string
+  text: string
   title: string
 }): string {
-  const lines = inputString.split("\n")
+  const lines = text.split("\n")
   lines.splice(1, 0, `title: ${title}`)
   return lines.join("\n")
 }
