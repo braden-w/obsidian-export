@@ -1,3 +1,4 @@
+import { writeTextFile, copyFile, mkdir } from "../bridge/denoBridge.ts"
 import {
   getImageFiles,
   getMarkdownFileSlugs,
@@ -6,11 +7,6 @@ import {
   ProcessFileFn,
   applyToFilesRecursive,
 } from "../helpers/file/applyToFilesRecursive.ts"
-import {
-  copyFile,
-  mkdir,
-  writeTextFile,
-} from "../helpers/file/writeTextFile.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
 import { processText } from "../helpers/markdown/processText.ts"
