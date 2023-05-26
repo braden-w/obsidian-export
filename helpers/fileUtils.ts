@@ -64,7 +64,8 @@ export async function getMarkdownFilePaths(
   const filePaths = new Set<string>()
   for (const [, summary] of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
-    filePaths.add(summary.filePath)
+    const filePath = `${summary.dirPath}/${summary.fileName}`
+    filePaths.add(filePath)
   }
   return filePaths
 }
