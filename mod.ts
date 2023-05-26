@@ -21,7 +21,7 @@ obsidianExport({
   markdownFileSummaries,
 })
 const referencedImageFiles = getReferencedImageFiles({ markdownFileSummaries })
-await copyReferencedImageFiles({
+copyReferencedImageFiles({
   inputDir: assetsDirectory,
   outputDir: assetsOutputDirectory,
   referencedImageFiles,
