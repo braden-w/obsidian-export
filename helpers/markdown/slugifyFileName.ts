@@ -1,4 +1,4 @@
-import { Slug } from '../../types.d.ts';
+import type { Slug } from '../../types.d.ts';
 
 export const slugifyFileName = (fileName: string): Slug => {
 	return fileName

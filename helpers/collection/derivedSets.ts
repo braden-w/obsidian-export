@@ -1,4 +1,4 @@
-import { MarkdownFileSummary } from '../../types.d.ts';
+import type { MarkdownFileSummary } from '../../types.d.ts';
 import { isCriteriaMet } from '../markdown/isCriteriaMet.ts';
 
 export function getMarkdownFileSlugs({
