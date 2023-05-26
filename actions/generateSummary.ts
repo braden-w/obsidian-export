@@ -9,10 +9,8 @@ import {
 } from "../helpers/collection/slugToSummaryMap.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
-import {
-  removeFileExtension,
-  slugifyFileName,
-} from "../helpers/markdownUtils.ts"
+import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
+import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 

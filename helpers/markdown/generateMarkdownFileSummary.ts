@@ -1,6 +1,7 @@
 import { readTextFile } from "../../bridge/denoBridge.ts"
 import { MarkdownFileSummary } from "../../types.d.ts"
-import { removeFileExtension, slugifyFileName } from "../markdownUtils.ts"
+import { removeFileExtension } from "./removeFileExtension.ts"
+import { slugifyFileName } from "./slugifyFileName.ts"
 
 export async function generateMarkdownFileSummary({
   dirPath,
