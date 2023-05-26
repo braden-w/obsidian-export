@@ -19,7 +19,10 @@ export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
     slugToSummaryMap.set(markdownSummary.slug, markdownSummary)
   }
 
-  await applyToFilesRecursive(contentDirectory, processFileEntry)
+  await applyToFilesRecursive({
+    dirPath: contentDirectory,
+    processFileFn: processFileEntry,
+  })
   return slugToSummaryMap
 }
 

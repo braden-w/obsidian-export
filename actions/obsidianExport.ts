@@ -23,7 +23,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
     await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
 
-  applyToFilesRecursive(inputDir, processFileEntry)
+  applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
 
 export async function copyDirectory(
