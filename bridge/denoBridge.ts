@@ -13,3 +13,7 @@ export async function copyFile(fromPath: string, toPath: string) {
 export async function mkdir(path: string) {
   return await Deno.mkdir(path)
 }
+
+export function readDir(path: string) {
+  return Deno.readDir(path)
+}

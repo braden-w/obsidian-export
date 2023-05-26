@@ -1,4 +1,9 @@
-import { writeTextFile, copyFile, mkdir } from "../bridge/denoBridge.ts"
+import {
+  writeTextFile,
+  copyFile,
+  mkdir,
+  readDir,
+} from "../bridge/denoBridge.ts"
 import {
   getImageFiles,
   getMarkdownFileSlugs,
@@ -38,7 +43,7 @@ export async function copyDirectory(
   allImageFiles: Set<string> | null = null
 ) {
   if (allImageFiles === null) allImageFiles = await getImageFiles()
-  const inputFiles = await Deno.readDir(inputDir)
+  const inputFiles = readDir(inputDir)
 
   for await (const file of inputFiles) {
     const src = `${inputDir}/${file.name}`
