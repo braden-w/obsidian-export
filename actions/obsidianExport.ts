@@ -5,7 +5,7 @@ import {
 } from "../helpers/file/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
-import { processText } from "../helpers/processText.ts"
+import { processText } from "../helpers/markdown/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()

@@ -1,5 +1,5 @@
-import { MarkdownFileSummary } from "../types.d.ts"
-import { removeFileExtension, slugifyFileName } from "./markdownUtils.ts"
+import { MarkdownFileSummary } from "../../types.d.ts"
+import { removeFileExtension, slugifyFileName } from "../markdownUtils.ts"
 
 export function processText(
   { fileName, fileText }: MarkdownFileSummary,
