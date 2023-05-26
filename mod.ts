@@ -27,5 +27,3 @@ copyReferencedImageFiles({
   outputDir: assetsOutputDirectory,
   referencedImageFiles,
 })
-
-generateDailyActivitySummary({ markdownFileSummaries })
