@@ -14,10 +14,11 @@ export function processText({
     stringWithWikilinks: textEmbedsFixed,
     allMarkdownSlugifiedFiles,
   })
-  return addTitleToSecondLine({
+  const textWithTitleFrontmatter = addTitleToSecondLine({
     text: textLinksFixed,
     title,
   })
+  return textWithTitleFrontmatter
 }
 
 /** Function that replaces `[[Some Page]]` with `[Some Page](/articles/some-page)` */
