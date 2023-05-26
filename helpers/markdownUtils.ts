@@ -39,7 +39,10 @@ export async function generateMarkdownFileSummary({
   }
 }
 
-export function getArticleData({ fileText, fileName }: MarkdownFileSummary) {
+export function getArticleFrontmatter({
+  fileText,
+  fileName,
+}: MarkdownFileSummary) {
   try {
     const { data } = parse(fileText)
     const dataParsed = articleSchema.parse(data)
