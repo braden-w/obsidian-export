@@ -30,7 +30,8 @@ export async function generateMarkdownFileSummary({
 }): Promise<MarkdownFileSummary> {
   const filePath = `${dirPath}/${fileName}`
   const fileText = await Deno.readTextFile(filePath)
-  const slug = slugifyFileName(fileName)
+  const fileNameWithoutExtension = removeFileExtension(fileName)
+  const slug = slugifyFileName(fileNameWithoutExtension)
   return {
     slug,
     fileName,
@@ -58,9 +59,8 @@ export function removeFileExtension(
   return fileName.slice(0, -3)
 }
 
-export const slugifyFileName = (fileName: `${string}.md`): Slug => {
-  const fileNameWithoutExtension = removeFileExtension(fileName)
-  return fileNameWithoutExtension
+export const slugifyFileName = (fileName: string): Slug => {
+  return fileName
     .trim()
     .replace(/[\s-—]+/g, "-")
     .replace(/[^a-zA-Z0-9-_]/g, "")
