@@ -7,9 +7,9 @@ export async function getMarkdownFileSlugs(
 ): Promise<Set<string>> {
   const summaries = await getSlugToSummaryMap()
   const slugs = new Set<string>()
-  for (const [slug, summary] of summaries) {
+  for (const summary of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
-    slugs.add(slug)
+    slugs.add(summary.slug)
   }
   return slugs
 }
@@ -19,7 +19,7 @@ export async function getMarkdownFilePaths(
 ): Promise<Set<string>> {
   const summaries = await getSlugToSummaryMap()
   const filePaths = new Set<string>()
-  for (const [, summary] of summaries) {
+  for (const summary of summaries) {
     if (isCriteriaMet && !isCriteriaMet(summary)) continue
     const filePath = `${summary.dirPath}/${summary.fileName}`
     filePaths.add(filePath)
@@ -31,7 +31,7 @@ export async function getImageFiles(): Promise<Set<string>> {
   const summaries = await getSlugToSummaryMap()
   const imageFiles = new Set<string>()
   const wikilinkRegex = /\[\[(.+?)\]\]/g
-  for (const [, summary] of summaries) {
+  for (const summary of summaries) {
     if (!isCriteriaMet(summary)) continue
     let match
     while ((match = wikilinkRegex.exec(summary.fileText)) !== null) {

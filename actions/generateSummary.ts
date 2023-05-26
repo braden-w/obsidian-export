@@ -3,10 +3,7 @@
  */
 import { writeTextFile } from "../bridge/denoBridge.ts"
 import { BASE_URL, N_DAYS } from "../constants.ts"
-import {
-  SlugToSummaryMap,
-  getSlugToSummaryMap,
-} from "../helpers/collection/slugToSummaryMap.ts"
+import { getSlugToSummaryMap } from "../helpers/collection/slugToSummaryMap.ts"
 import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
@@ -88,7 +85,7 @@ async function generateSummary() {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
   )
-    .map(([_slug, markdownFileSummary]) => {
+    .map((markdownFileSummary) => {
       if (!isCriteriaMet(markdownFileSummary)) return null
       const { data, error } = getArticleFrontmatter(markdownFileSummary)
       if (error) return null
@@ -128,16 +125,29 @@ async function appendToFile(filePath: string, fileText: string) {
 
 function extractNotesFromDailyNote(
   { fileText }: MarkdownFileSummary,
-  markdownFiles: SlugToSummaryMap
+  markdownFiles: MarkdownFileSummary[]
 ) {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return Array.from(fileText.matchAll(wikilinkRegex), (match) => {
     const originalWikilinkTitle = match[1]
     const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
-    const linkedFileData = markdownFiles.get(wikilinkSlug)
+    const linkedFileData = findMarkdownFileWithMatchingSlug({
+      markdownFiles,
+      slug: wikilinkSlug,
+    })
 
     return linkedFileData
   }).filter(Boolean)
+}
+
+function findMarkdownFileWithMatchingSlug({
+  markdownFiles,
+  slug,
+}: {
+  markdownFiles: MarkdownFileSummary[]
+  slug: string
+}) {
+  return markdownFiles.find((markdownFile) => markdownFile.slug === slug)
 }
 
 function isDailyNoteWithinLastNDays(
