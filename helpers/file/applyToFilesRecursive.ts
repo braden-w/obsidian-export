@@ -1,4 +1,4 @@
-import { readDir } from '../bridge/denoBridge.ts';
+import { readDir } from './fileUtils.ts';
 
 export type ProcessFileFn = ({
 	dirPath,
