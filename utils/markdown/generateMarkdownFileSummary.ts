@@ -1,4 +1,4 @@
-import type { MarkdownFileSummary } from '../../types.d.ts';
+import type { MarkdownFileSummary } from '../types.d.ts';
 import { readTextFile } from '../file/fileUtils.ts';
 import { removeFileExtension } from './removeFileExtension.ts';
 import { slugifyFileName } from './slugifyFileName.ts';

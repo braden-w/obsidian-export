@@ -1,4 +1,4 @@
-import { MarkdownFileSummary } from '../types.d.ts';
+import { MarkdownFileSummary } from './types.d.ts';
 import { applyToFilesRecursive, ProcessFileFn } from './file/applyToFilesRecursive.ts';
 import { generateMarkdownFileSummary } from './markdown/generateMarkdownFileSummary.ts';
 

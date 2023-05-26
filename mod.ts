@@ -1,7 +1,7 @@
 import { copyReferencedImageFiles, obsidianExport } from './obsidianExport.ts';
-import { MarkdownFileSummary } from './types.d.ts';
 import { getMarkdownFileSummaries } from './utils/getMarkdownFileSummaries.ts';
 import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
+import { MarkdownFileSummary } from './utils/types.d.ts';
 
 export const contentDirectory =
 	'/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian';

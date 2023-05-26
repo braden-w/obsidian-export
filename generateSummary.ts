@@ -3,12 +3,12 @@
  */
 import { BASE_URL, N_DAYS } from './constants.ts';
 import { contentDirectory } from './mod.ts';
-import { MarkdownFileSummary } from './types.d.ts';
 import { writeTextFile } from './utils/file/fileUtils.ts';
 import { getArticleFrontmatter } from './utils/markdown/frontmatter.ts';
 import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
 import { removeFileExtension } from './utils/markdown/removeFileExtension.ts';
 import { slugifyFileName } from './utils/markdown/slugifyFileName.ts';
+import { MarkdownFileSummary } from './utils/types.d.ts';
 
 export async function generateDailyActivitySummary({
 	markdownFileSummaries
