@@ -1,4 +1,4 @@
-import { copyFile, writeTextFile } from '../helpers/bridge/denoBridge.ts';
+import { copyFile, writeTextFile } from '../helpers/file/fileUtils.ts';
 import { getMarkdownFileSlugs } from '../helpers/collection/derivedSets.ts';
 import { ProcessFileFn, applyToFilesRecursive } from '../helpers/file/applyToFilesRecursive.ts';
 import { generateMarkdownFileSummary } from '../helpers/markdown/generateMarkdownFileSummary.ts';
