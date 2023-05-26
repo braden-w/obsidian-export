@@ -21,20 +21,20 @@ export const articleSchema = z.object({
   "link-github": z.string().url().nullable(),
 })
 
-export async function getMarkdownFileSummary(
-  entryPath: `${string}/${string}.md`,
-  entryName: string
-): Promise<MarkdownFileSummary> {
-  const fileName = entryName as `${string}.md`
-  const fileNameWithoutExtension = removeFileExtension(fileName)
-  const filePath = entryPath
+export async function generateMarkdownFileSummary({
+  dirPath,
+  fileName,
+}: {
+  dirPath: `${string}/${string}`
+  fileName: `${string}.md`
+}): Promise<MarkdownFileSummary> {
+  const filePath = `${dirPath}/${fileName}`
   const fileText = await Deno.readTextFile(filePath)
-  const slug = slugifyFileName(fileNameWithoutExtension)
+  const slug = slugifyFileName(fileName)
   return {
     slug,
     fileName,
-    fileNameWithoutExtension,
-    filePath,
+    dirPath,
     fileText,
   }
 }
@@ -51,15 +51,15 @@ export function getArticleData({ fileText, fileName }: MarkdownFileSummary) {
 
 export function removeFileExtension(
   fileName: MarkdownFileSummary["fileName"]
-): MarkdownFileSummary["fileNameWithoutExtension"] {
+): string {
   return fileName.slice(0, -3)
 }
 
-export const slugifyFileName = (
-  fileName: MarkdownFileSummary["fileNameWithoutExtension"]
-): Slug =>
-  fileName
+export const slugifyFileName = (fileName: `${string}.md`): Slug => {
+  const fileNameWithoutExtension = removeFileExtension(fileName)
+  return fileNameWithoutExtension
     .trim()
     .replace(/[\s-—]+/g, "-")
     .replace(/[^a-zA-Z0-9-_]/g, "")
     .toLowerCase()
+}

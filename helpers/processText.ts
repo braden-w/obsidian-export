@@ -1,20 +1,31 @@
-import { slugifyFileName } from "./markdownUtils.ts"
+import { MarkdownFileSummary } from "../types.d.ts"
+import { removeFileExtension, slugifyFileName } from "./markdownUtils.ts"
 
 export function processText(
-  text: string,
-  title: string,
+  { fileName, fileText }: MarkdownFileSummary,
   allMarkdownSlugifiedFiles: Set<string>
 ) {
-  return addTitleToSecondLine(
-    wikilinksToLinks(embedLinksToLinks(text), allMarkdownSlugifiedFiles),
-    title
-  )
+  const textEmbedsFixed = replaceWikiEmbedMdEmbed(fileText)
+  const textLinksFixed = replaceWikiLinksMdLinks({
+    stringWithWikilinks: textEmbedsFixed,
+    allMarkdownSlugifiedFiles,
+  })
+  const title = removeFileExtension(fileName)
+  const textWithTitleFrontmatter = addTitleToSecondLine({
+    text: textLinksFixed,
+    title,
+  })
+  return textWithTitleFrontmatter
 }
 
-function wikilinksToLinks(
-  stringWithWikilinks: string,
+/** Function that replaces `[[Some Page]]` with `[Some Page](/articles/some-page)` */
+function replaceWikiLinksMdLinks({
+  stringWithWikilinks,
+  allMarkdownSlugifiedFiles,
+}: {
+  stringWithWikilinks: string
   allMarkdownSlugifiedFiles: Set<string>
-): string {
+}): string {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return stringWithWikilinks.replace(wikilinkRegex, (s: string) => {
     if (!s) return ""
@@ -42,9 +53,10 @@ function wikilinksToLinks(
   })
 }
 
-function embedLinksToLinks(stringWithEmbedLinks: string): string {
+/** Function that replaces `![[Some Image]]` with `![Some Image](/assets/some-image)` */
+function replaceWikiEmbedMdEmbed(text: string): string {
   const embedLinkRegex = /!\[\[(.+?)\]\]/g
-  return stringWithEmbedLinks.replace(embedLinkRegex, (s: string) => {
+  return text.replace(embedLinkRegex, (s: string) => {
     if (!s) return ""
     const match = s.match(/!\[\[(.+?)\]\]/)
     if (match) {
@@ -57,8 +69,14 @@ function embedLinksToLinks(stringWithEmbedLinks: string): string {
 }
 
 // Function that adds `title: ${title}` to the second line of the string
-function addTitleToSecondLine(inputString: string, title: string): string {
-  const lines = inputString.split("\n")
+function addTitleToSecondLine({
+  text,
+  title,
+}: {
+  text: string
+  title: string
+}): string {
+  const lines = text.split("\n")
   lines.splice(1, 0, `title: ${title}`)
   return lines.join("\n")
 }

@@ -2,12 +2,13 @@
  * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
 import { BASE_URL, N_DAYS } from "../constants.ts"
-import {
-  getMarkdownFileSummaries,
-  MarkdownFileSummaries,
-} from "../helpers/fileUtils.ts"
+import { SlugToSummaryMap, getSlugToSummaryMap } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { getArticleData, slugifyFileName } from "../helpers/markdownUtils.ts"
+import {
+  getArticleData,
+  removeFileExtension,
+  slugifyFileName,
+} from "../helpers/markdownUtils.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
@@ -72,15 +73,15 @@ async function main() {
   await Deno.writeTextFile(`${contentDirectory}/summaries/${fileName}`, output)
 }
 
-function createSummaryLink(summary: MarkdownFileSummary): string {
-  const { fileNameWithoutExtension, slug } = summary
+function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
+  const fileNameWithoutExtension = removeFileExtension(fileName)
   return `- [${fileNameWithoutExtension}](${BASE_URL}/${slug})`
 }
 
 main()
 
 async function generateSummary() {
-  const markdownFiles = await getMarkdownFileSummaries()
+  const markdownFiles = await getSlugToSummaryMap()
 
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
     markdownFiles
@@ -125,7 +126,7 @@ async function appendToFile(filePath: string, fileText: string) {
 
 function extractNotesFromDailyNote(
   { fileText }: MarkdownFileSummary,
-  markdownFiles: MarkdownFileSummaries
+  markdownFiles: SlugToSummaryMap
 ) {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return Array.from(fileText.matchAll(wikilinkRegex), (match) => {
@@ -141,7 +142,8 @@ function isDailyNoteWithinLastNDays(
   markdownFileSummary: MarkdownFileSummary,
   numberOfDays: number
 ) {
-  const { fileNameWithoutExtension } = markdownFileSummary
+  const { fileName } = markdownFileSummary
+  const fileNameWithoutExtension = removeFileExtension(fileName)
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
   // Convert fileNameWithoutExtension to a Date object
