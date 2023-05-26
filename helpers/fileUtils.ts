@@ -4,11 +4,11 @@ import { applyToFilesRecursive } from "./fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
-export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
+export type SlugToSummaryMap = Map<Slug, MarkdownFileSummary>
 
 /** Returns a map of MarkdownFileSummary objects, keyed by slug. */
-export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
-  const markdownSlugToSummaries = new Map<Slug, MarkdownFileSummary>()
+export async function getMarkdownFileSummaries(): Promise<SlugToSummaryMap> {
+  const slugToSummaryMap: SlugToSummaryMap = new Map()
 
   const processFileEntry = async (filePath: string, fileName: string) => {
     if (!filePath.endsWith(".md")) return
@@ -16,11 +16,11 @@ export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries>
       filePath as `${string}/${string}.md`,
       fileName
     )
-    markdownSlugToSummaries.set(markdownSummary.slug, markdownSummary)
+    slugToSummaryMap.set(markdownSummary.slug, markdownSummary)
   }
 
   await applyToFilesRecursive(contentDirectory, processFileEntry)
-  return markdownSlugToSummaries
+  return slugToSummaryMap
 }
 
 export async function getMarkdownFileSlugs(
