@@ -1,8 +1,7 @@
-import { generateDailyActivitySummary } from './actions/generateSummary.ts';
 import { copyReferencedImageFiles, obsidianExport } from './actions/obsidianExport.ts';
-import { getMarkdownFileSummaries } from './helpers/collection/getMarkdownFileSummaries.ts';
-import { isCriteriaMet } from './helpers/markdown/isCriteriaMet.ts';
 import { MarkdownFileSummary } from './types.d.ts';
+import { getMarkdownFileSummaries } from './utils/getMarkdownFileSummaries.ts';
+import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
 
 export const contentDirectory =
 	'/Users/braden/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian';
