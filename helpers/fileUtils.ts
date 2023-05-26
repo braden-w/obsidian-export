@@ -5,6 +5,8 @@ import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
 export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
+
+/** Returns a map of MarkdownFileSummary objects, keyed by slug. */
 export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
   const markdownSlugToSummaries = new Map<Slug, MarkdownFileSummary>()
 
