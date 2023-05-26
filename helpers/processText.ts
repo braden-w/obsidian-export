@@ -10,15 +10,21 @@ export function processText({
   allMarkdownSlugifiedFiles: Set<string>
 }) {
   return addTitleToSecondLine(
-    wikilinksToLinks(embedLinksToLinks(text), allMarkdownSlugifiedFiles),
+    wikilinksToLinks({
+      stringWithWikilinks: embedLinksToLinks(text),
+      allMarkdownSlugifiedFiles,
+    }),
     title
   )
 }
 
-function wikilinksToLinks(
-  stringWithWikilinks: string,
+function wikilinksToLinks({
+  stringWithWikilinks,
+  allMarkdownSlugifiedFiles,
+}: {
+  stringWithWikilinks: string
   allMarkdownSlugifiedFiles: Set<string>
-): string {
+}): string {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return stringWithWikilinks.replace(wikilinkRegex, (s: string) => {
     if (!s) return ""
