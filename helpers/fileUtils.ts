@@ -15,11 +15,10 @@ export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
 
   const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
     if (!filePath.endsWith(".md")) return
-    const markdownSummary = await generateMarkdownFileSummary({
-      entryPath: filePath as `${string}/${string}.md`,
-      entryName: fileName,
+    await addMarkdownFileToSlugToSummaryMap({
+      file: { filePath, fileName },
+      map: slugToSummaryMap,
     })
-    slugToSummaryMap.set(markdownSummary.slug, markdownSummary)
   }
 
   await applyToFilesRecursive({
@@ -27,6 +26,23 @@ export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
     processFileFn: processFileEntry,
   })
   return slugToSummaryMap
+}
+
+async function addMarkdownFileToSlugToSummaryMap({
+  file: { filePath, fileName },
+  map,
+}: {
+  file: {
+    filePath: string
+    fileName: string
+  }
+  map: SlugToSummaryMap
+}) {
+  const markdownSummary = await generateMarkdownFileSummary({
+    entryPath: filePath as `${string}/${string}.md`,
+    entryName: fileName,
+  })
+  map.set(markdownSummary.slug, markdownSummary)
 }
 
 export async function getMarkdownFileSlugs(
