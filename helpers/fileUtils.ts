@@ -35,7 +35,7 @@ export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
 }
 
 async function addMarkdownFileToSlugToSummaryMap({
-  file: { dirPath, fileName },
+  file,
   map,
 }: {
   file: {
@@ -44,10 +44,7 @@ async function addMarkdownFileToSlugToSummaryMap({
   }
   map: SlugToSummaryMap
 }) {
-  const markdownSummary = await generateMarkdownFileSummary({
-    dirPath,
-    fileName,
-  })
+  const markdownSummary = await generateMarkdownFileSummary(file)
   map.set(markdownSummary.slug, markdownSummary)
 }
 
