@@ -12,7 +12,7 @@ import {
   ProcessFileFn,
   applyToFilesRecursive,
 } from "../helpers/file/applyToFilesRecursive.ts"
-import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
 import { processText } from "../helpers/markdown/processText.ts"
 

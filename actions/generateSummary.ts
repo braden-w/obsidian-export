@@ -7,7 +7,7 @@ import {
   SlugToSummaryMap,
   getSlugToSummaryMap,
 } from "../helpers/collection/slugToSummaryMap.ts"
-import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
 import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"

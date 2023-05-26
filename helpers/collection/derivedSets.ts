@@ -1,5 +1,5 @@
 import { MarkdownFileSummary } from "../../types.d.ts"
-import { isCriteriaMet } from "../isCriteriaMet.ts"
+import { isCriteriaMet } from "../markdown/isCriteriaMet.ts"
 import { getSlugToSummaryMap } from "./slugToSummaryMap.ts"
 
 export async function getMarkdownFileSlugs(
