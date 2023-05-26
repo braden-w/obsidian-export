@@ -1,9 +1,7 @@
-import { copyFile, writeTextFile } from '../helpers/file/fileUtils.ts';
-import { ProcessFileFn, applyToFilesRecursive } from '../helpers/file/applyToFilesRecursive.ts';
-import { generateMarkdownFileSummary } from '../helpers/markdown/generateMarkdownFileSummary.ts';
-import { isCriteriaMet } from '../helpers/markdown/isCriteriaMet.ts';
-import { processText } from '../helpers/markdown/processText.ts';
-import { MarkdownFileSummary } from '../types.d.ts';
+import { ProcessFileFn, applyToFilesRecursive } from './utils/file/applyToFilesRecursive.ts';
+import { copyFile, writeTextFile } from './utils/file/fileUtils.ts';
+import { generateMarkdownFileSummary } from './utils/markdown/generateMarkdownFileSummary.ts';
+import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
 
 export function obsidianExport({
 	inputDir,

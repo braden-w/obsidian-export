@@ -1,4 +1,4 @@
-import { copyReferencedImageFiles, obsidianExport } from './actions/obsidianExport.ts';
+import { copyReferencedImageFiles, obsidianExport } from './obsidianExport.ts';
 import { MarkdownFileSummary } from './types.d.ts';
 import { getMarkdownFileSummaries } from './utils/getMarkdownFileSummaries.ts';
 import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
