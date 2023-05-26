@@ -4,8 +4,8 @@
 import { BASE_URL, N_DAYS } from "../constants.ts"
 import { SlugToSummaryMap, getSlugToSummaryMap } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
+import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import {
-  getArticleFrontmatter,
   removeFileExtension,
   slugifyFileName,
 } from "../helpers/markdownUtils.ts"

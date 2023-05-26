@@ -3,7 +3,7 @@ import { MarkdownFileSummary, Slug } from "../types.d.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
-} from "./fileUtils/applyToFilesRecursive.ts"
+} from "./file/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "./markdown/generateMarkdownFileSummary.ts"
 
