@@ -1,5 +1,4 @@
 import { copyFile, writeTextFile } from '../helpers/file/fileUtils.ts';
-import { getMarkdownFileSlugs } from '../helpers/collection/derivedSets.ts';
 import { ProcessFileFn, applyToFilesRecursive } from '../helpers/file/applyToFilesRecursive.ts';
 import { generateMarkdownFileSummary } from '../helpers/markdown/generateMarkdownFileSummary.ts';
 import { isCriteriaMet } from '../helpers/markdown/isCriteriaMet.ts';
@@ -9,14 +8,12 @@ import { MarkdownFileSummary } from '../types.d.ts';
 export function obsidianExport({
 	inputDir,
 	outputDir,
-	markdownFileSummaries
+	markdownFileSlugs
 }: {
 	inputDir: string;
 	outputDir: string;
-	markdownFileSummaries: MarkdownFileSummary[];
+	markdownFileSlugs: Set<string>;
 }) {
-	const markdownFileSlugs = getMarkdownFileSlugs({ markdownFileSummaries });
-
 	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
 		if (!fileName.endsWith('.md')) return;
 		const markdownSummary = await generateMarkdownFileSummary({
