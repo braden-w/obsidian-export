@@ -1,23 +1,24 @@
-import {
-  writeTextFile,
-  copyFile,
-  mkdir,
-  readDir,
-} from "../bridge/denoBridge.ts"
-import {
-  getImageFiles,
-  getMarkdownFileSlugs,
-} from "../helpers/collection/derivedSets.ts"
+import { copyFile, writeTextFile } from "../bridge/denoBridge.ts"
+import { getMarkdownFileSlugs } from "../helpers/collection/derivedSets.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
 } from "../helpers/file/applyToFilesRecursive.ts"
-import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
+import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { processText } from "../helpers/markdown/processText.ts"
+import { MarkdownFileSummary } from "../types.d.ts"
 
-export async function obsidianExport(inputDir: string, outputDir: string) {
-  const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
+export function obsidianExport({
+  inputDir,
+  outputDir,
+  markdownFileSummaries,
+}: {
+  inputDir: string
+  outputDir: string
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
+  const markdownFileSlugs = getMarkdownFileSlugs({ markdownFileSummaries })
 
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
     if (!fileName.endsWith(".md")) return
@@ -26,10 +27,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
       fileName: fileName as `${string}.md`,
     })
     if (!isCriteriaMet(markdownSummary)) return
-    const processedText = processText(
-      markdownSummary,
-      allMarkdownSlugifiedFiles
-    )
+    const processedText = processText(markdownSummary, markdownFileSlugs)
     const { slug } = markdownSummary
     await writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
@@ -37,23 +35,24 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
   applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }
 
-export async function copyDirectory(
-  inputDir: string,
-  outputDir: string,
-  allImageFiles: Set<string> | null = null
-) {
-  if (allImageFiles === null) allImageFiles = await getImageFiles()
-  const inputFiles = readDir(inputDir)
+/** Copy all image files referenced in markdown files to the output directory */
+export function copyReferencedImageFiles({
+  inputDir,
+  outputDir,
+  referencedImageFiles,
+}: {
+  inputDir: string
+  outputDir: string
+  referencedImageFiles: Set<string>
+}) {
+  const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
+    const src = `${dirPath}/${fileName}`
+    const dest = `${outputDir}/${fileName.replace(/ /g, "-")}`
 
-  for await (const file of inputFiles) {
-    const src = `${inputDir}/${file.name}`
-    const dest = `${outputDir}/${file.name.replace(/ /g, "-")}`
-
-    if (file.isFile && allImageFiles.has(file.name)) {
+    if (referencedImageFiles.has(fileName)) {
       await copyFile(src, dest)
-    } else if (file.isDirectory) {
-      await mkdir(dest)
-      await copyDirectory(src, dest, allImageFiles)
     }
   }
+
+  applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry })
 }

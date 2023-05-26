@@ -1,12 +1,8 @@
 /**
- * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFiles (you'll need to slugify the wikilink context first and then fetch the content from markdownFiles). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
+ * Write a Deno typescript function that opens the past 7 days' markdown files inside the "journals" folder and writes a summary to a file called "Today's note". They are markdown files whose names are in the YYYY-MM-DD format—e.g. "2022-01-20". For each of these files, match all of their wikilinks (enclosed in square [[ ]] brackets), and get their content from markdownFileSummaries (you'll need to slugify the wikilink context first and then fetch the content from markdownFileSummaries). If the content has the string "status: DONE", then append it to the summary file in the form `[${original wikilink title}](${slugified wikilink})`
  */
 import { writeTextFile } from "../bridge/denoBridge.ts"
 import { BASE_URL, N_DAYS } from "../constants.ts"
-import {
-  SlugToSummaryMap,
-  getSlugToSummaryMap,
-} from "../helpers/collection/slugToSummaryMap.ts"
 import { isCriteriaMet } from "../helpers/markdown/isCriteriaMet.ts"
 import { getArticleFrontmatter } from "../helpers/markdown/frontmatter.ts"
 import { removeFileExtension } from "../helpers/markdown/removeFileExtension.ts"
@@ -14,8 +10,12 @@ import { slugifyFileName } from "../helpers/markdown/slugifyFileName.ts"
 import { contentDirectory } from "../mod.ts"
 import { MarkdownFileSummary } from "../types.d.ts"
 
-async function main() {
-  const summaries = await generateSummary()
+export async function generateDailyActivitySummary({
+  markdownFileSummaries,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
+  const summaries = await generateSummary({ markdownFileSummaries })
   const sectionTitles = [
     "Noteworthy",
     "Media",
@@ -80,24 +80,35 @@ function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {
   return `- [${fileNameWithoutExtension}](${BASE_URL}/${slug})`
 }
 
-main()
-
-async function generateSummary() {
-  const markdownFiles = await getSlugToSummaryMap()
-
+function generateSummary({
+  markdownFileSummaries,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+}) {
   const markdownFileSummariesInRange: MarkdownFileSummary[] = Array.from(
-    markdownFiles
+    markdownFileSummaries
   )
-    .map(([_slug, markdownFileSummary]) => {
+    .map((markdownFileSummary) => {
       if (!isCriteriaMet(markdownFileSummary)) return null
       const { data, error } = getArticleFrontmatter(markdownFileSummary)
       if (error) return null
       const { date, "date modified": dateModified } = data
-      if (isDailyNoteWithinLastNDays(markdownFileSummary, N_DAYS)) {
-        return extractNotesFromDailyNote(markdownFileSummary, markdownFiles)
-      } else if (date && isWithinLastNDays(date, N_DAYS)) {
+      if (
+        isDailyNoteWithinLastNDays({
+          markdownFileSummary,
+          numberOfDays: N_DAYS,
+        })
+      ) {
+        return extractNotesFromDailyNote(
+          markdownFileSummary,
+          markdownFileSummaries
+        )
+      } else if (date && isWithinLastNDays({ date, numberOfDays: N_DAYS })) {
         return markdownFileSummary
-      } else if (dateModified && isWithinLastNDays(dateModified, N_DAYS)) {
+      } else if (
+        dateModified &&
+        isWithinLastNDays({ date: dateModified, numberOfDays: N_DAYS })
+      ) {
         return markdownFileSummary
       }
 
@@ -115,40 +126,70 @@ async function generateSummary() {
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
-function isWithinLastNDays(date: Date, numberOfDays: number): boolean {
+function isWithinLastNDays({
+  date,
+  numberOfDays,
+}: {
+  date: Date
+  numberOfDays: number
+}): boolean {
   const now = new Date()
   const diffInMs = now.getTime() - date.getTime()
   const msIn7Days = numberOfDays * 24 * 60 * 60 * 1000
   return diffInMs <= msIn7Days
 }
 
-async function appendToFile(filePath: string, fileText: string) {
+async function appendToFile({
+  filePath,
+  fileText,
+}: {
+  filePath: string
+  fileText: string
+}) {
   await writeTextFile(filePath, fileText, { append: true })
 }
 
 function extractNotesFromDailyNote(
   { fileText }: MarkdownFileSummary,
-  markdownFiles: SlugToSummaryMap
+  markdownFileSummaries: MarkdownFileSummary[]
 ) {
   const wikilinkRegex = /\[\[(.+?)\]\]/g
   return Array.from(fileText.matchAll(wikilinkRegex), (match) => {
     const originalWikilinkTitle = match[1]
     const wikilinkSlug = slugifyFileName(originalWikilinkTitle)
-    const linkedFileData = markdownFiles.get(wikilinkSlug)
+    const linkedFileData = findMarkdownFileWithMatchingSlug({
+      markdownFileSummaries,
+      slug: wikilinkSlug,
+    })
 
     return linkedFileData
   }).filter(Boolean)
 }
 
-function isDailyNoteWithinLastNDays(
-  markdownFileSummary: MarkdownFileSummary,
+function findMarkdownFileWithMatchingSlug({
+  markdownFileSummaries,
+  slug,
+}: {
+  markdownFileSummaries: MarkdownFileSummary[]
+  slug: string
+}) {
+  return markdownFileSummaries.find(
+    (markdownFile) => markdownFile.slug === slug
+  )
+}
+
+function isDailyNoteWithinLastNDays({
+  markdownFileSummary,
+  numberOfDays,
+}: {
+  markdownFileSummary: MarkdownFileSummary
   numberOfDays: number
-) {
+}) {
   const { fileName } = markdownFileSummary
   const fileNameWithoutExtension = removeFileExtension(fileName)
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
   // Convert fileNameWithoutExtension to a Date object
   const dateFileName = new Date(fileNameWithoutExtension)
-  return isWithinLastNDays(dateFileName, numberOfDays)
+  return isWithinLastNDays({ date: dateFileName, numberOfDays })
 }
