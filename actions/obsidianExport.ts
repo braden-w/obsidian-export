@@ -6,7 +6,11 @@ import {
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
 import { processText } from "../helpers/markdown/processText.ts"
-import { writeTextFile } from "../helpers/file/writeTextFile.ts"
+import {
+  copyFile,
+  mkdir,
+  writeTextFile,
+} from "../helpers/file/writeTextFile.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
@@ -42,9 +46,9 @@ export async function copyDirectory(
     const dest = `${outputDir}/${file.name.replace(/ /g, "-")}`
 
     if (file.isFile && allImageFiles.has(file.name)) {
-      await Deno.copyFile(src, dest)
+      await copyFile(src, dest)
     } else if (file.isDirectory) {
-      await Deno.mkdir(dest)
+      await mkdir(dest)
       await copyDirectory(src, dest, allImageFiles)
     }
   }
