@@ -16,7 +16,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
   const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
     if (!fileName.endsWith(".md")) return
     const markdownSummary = await generateMarkdownFileSummary({
-      filePath: `${dirPath}/${fileName}` as `${string}/${string}.md`,
+      dirPath: dirPath as `${string}/${string}`,
       fileName: fileName as `${string}.md`,
     })
     if (!isCriteriaMet(markdownSummary)) return
