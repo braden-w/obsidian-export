@@ -14,7 +14,7 @@ export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries>
     )
     markdownFiles.set(markdownSummary.slug, markdownSummary)
   }
-  await processFilesInFolder(contentDirectory, processFileEntry)
+  await applyToFilesRecursive(contentDirectory, processFileEntry)
   return markdownFiles
 }
 
@@ -56,7 +56,7 @@ export async function getImageFiles(): Promise<Set<string>> {
   return imageFiles
 }
 
-export async function processFilesInFolder(
+export async function applyToFilesRecursive(
   path: string,
   fileProcessingFunction: (
     entryPath: string,
@@ -66,9 +66,9 @@ export async function processFilesInFolder(
   for await (const dirEntry of Deno.readDir(path)) {
     const entryPath = `${path}/${dirEntry.name}` as const
     if (dirEntry.isDirectory) {
-      await processFilesInFolder(entryPath)
+      await applyToFilesRecursive(entryPath, fileProcessingFunction)
     } else {
-      await processFileEntry(entryPath, dirEntry.name)
+      await fileProcessingFunction(entryPath, dirEntry.name)
     }
   }
 }
