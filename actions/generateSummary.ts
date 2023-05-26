@@ -93,14 +93,22 @@ function generateSummary({
       const { data, error } = getArticleFrontmatter(markdownFileSummary)
       if (error) return null
       const { date, "date modified": dateModified } = data
-      if (isDailyNoteWithinLastNDays(markdownFileSummary, N_DAYS)) {
+      if (
+        isDailyNoteWithinLastNDays({
+          markdownFileSummary,
+          numberOfDays: N_DAYS,
+        })
+      ) {
         return extractNotesFromDailyNote(
           markdownFileSummary,
           markdownFileSummaries
         )
-      } else if (date && isWithinLastNDays(date, N_DAYS)) {
+      } else if (date && isWithinLastNDays({ date, numberOfDays: N_DAYS })) {
         return markdownFileSummary
-      } else if (dateModified && isWithinLastNDays(dateModified, N_DAYS)) {
+      } else if (
+        dateModified &&
+        isWithinLastNDays({ date: dateModified, numberOfDays: N_DAYS })
+      ) {
         return markdownFileSummary
       }
 
@@ -118,14 +126,26 @@ function generateSummary({
  * @returns {boolean} - `true` if the date is within the past 7 days, `false` otherwise.
  */
 
-function isWithinLastNDays(date: Date, numberOfDays: number): boolean {
+function isWithinLastNDays({
+  date,
+  numberOfDays,
+}: {
+  date: Date
+  numberOfDays: number
+}): boolean {
   const now = new Date()
   const diffInMs = now.getTime() - date.getTime()
   const msIn7Days = numberOfDays * 24 * 60 * 60 * 1000
   return diffInMs <= msIn7Days
 }
 
-async function appendToFile(filePath: string, fileText: string) {
+async function appendToFile({
+  filePath,
+  fileText,
+}: {
+  filePath: string
+  fileText: string
+}) {
   await writeTextFile(filePath, fileText, { append: true })
 }
 
@@ -158,15 +178,18 @@ function findMarkdownFileWithMatchingSlug({
   )
 }
 
-function isDailyNoteWithinLastNDays(
-  markdownFileSummary: MarkdownFileSummary,
+function isDailyNoteWithinLastNDays({
+  markdownFileSummary,
+  numberOfDays,
+}: {
+  markdownFileSummary: MarkdownFileSummary
   numberOfDays: number
-) {
+}) {
   const { fileName } = markdownFileSummary
   const fileNameWithoutExtension = removeFileExtension(fileName)
   // If the file name is in the format YYYY-MM-DD, then it's a daily note
   if (!fileNameWithoutExtension.match(/^\d{4}-\d{2}-\d{2}$/)) return false
   // Convert fileNameWithoutExtension to a Date object
   const dateFileName = new Date(fileNameWithoutExtension)
-  return isWithinLastNDays(dateFileName, numberOfDays)
+  return isWithinLastNDays({ date: dateFileName, numberOfDays })
 }
