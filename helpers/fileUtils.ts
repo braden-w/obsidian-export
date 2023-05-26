@@ -1,5 +1,6 @@
 import { contentDirectory } from "../mod.ts"
 import { Slug, MarkdownFileSummary } from "../types.d.ts"
+import { applyToFilesRecursive } from "./fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
@@ -54,18 +55,4 @@ export async function getImageFiles(): Promise<Set<string>> {
     }
   }
   return imageFiles
-}
-
-export async function applyToFilesRecursive(
-  dirPath: string,
-  processFileFn: (filePath: string, fileName: string) => Promise<void>
-) {
-  for await (const dirEntry of Deno.readDir(dirPath)) {
-    const entryPath = `${dirPath}/${dirEntry.name}` as const
-    if (dirEntry.isDirectory) {
-      await applyToFilesRecursive(entryPath, processFileFn)
-    } else {
-      await processFileFn(entryPath, dirEntry.name)
-    }
-  }
 }
