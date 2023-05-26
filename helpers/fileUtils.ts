@@ -15,10 +15,10 @@ export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
 
   const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
     if (!filePath.endsWith(".md")) return
-    const markdownSummary = await getMarkdownFileSummary(
-      filePath as `${string}/${string}.md`,
-      fileName
-    )
+    const markdownSummary = await getMarkdownFileSummary({
+      entryPath: filePath as `${string}/${string}.md`,
+      entryName: fileName,
+    })
     slugToSummaryMap.set(markdownSummary.slug, markdownSummary)
   }
 

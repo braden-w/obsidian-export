@@ -21,10 +21,13 @@ export const articleSchema = z.object({
   "link-github": z.string().url().nullable(),
 })
 
-export async function getMarkdownFileSummary(
-  entryPath: `${string}/${string}.md`,
+export async function getMarkdownFileSummary({
+  entryPath,
+  entryName,
+}: {
+  entryPath: `${string}/${string}.md`
   entryName: string
-): Promise<MarkdownFileSummary> {
+}): Promise<MarkdownFileSummary> {
   const fileName = entryName as `${string}.md`
   const fileNameWithoutExtension = removeFileExtension(fileName)
   const filePath = entryPath

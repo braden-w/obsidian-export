@@ -12,10 +12,10 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
 
   const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
     if (!filePath.endsWith(".md")) return
-    const markdownSummary = await getMarkdownFileSummary(
-      filePath as `${string}/${string}.md`,
-      fileName
-    )
+    const markdownSummary = await getMarkdownFileSummary({
+      entryPath: filePath as `${string}/${string}.md`,
+      entryName: fileName,
+    })
     if (!isCriteriaMet(markdownSummary)) return
     const { slug, fileText, fileNameWithoutExtension } = markdownSummary
     const processedText = processText(
