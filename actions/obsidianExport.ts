@@ -2,10 +2,10 @@ import { getImageFiles, getMarkdownFileSlugs } from "../helpers/fileUtils.ts"
 import {
   ProcessFileFn,
   applyToFilesRecursive,
-} from "../helpers/fileUtils/applyToFilesRecursive.ts"
+} from "../helpers/file/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
-import { generateMarkdownFileSummary } from "../helpers/markdownUtils.ts"
-import { processText } from "../helpers/processText.ts"
+import { generateMarkdownFileSummary } from "../helpers/markdown/generateMarkdownFileSummary.ts"
+import { processText } from "../helpers/markdown/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
