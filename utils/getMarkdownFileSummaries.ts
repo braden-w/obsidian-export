@@ -1,6 +1,7 @@
-import { applyToFilesRecursive, ProcessFileFn } from './file/applyToFilesRecursive.ts';
+import type { ProcessFileFn } from './file/applyToFilesRecursive.ts';
+import { applyToFilesRecursive } from './file/applyToFilesRecursive.ts';
 import { generateMarkdownFileSummary } from './markdown/generateMarkdownFileSummary.ts';
-import { MarkdownFileSummary } from './types.d.ts';
+import type { MarkdownFileSummary } from './types.d.ts';
 
 /** Returns a array of MarkdownFileSummary objects. */
 export async function getMarkdownFileSummaries(
