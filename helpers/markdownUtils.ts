@@ -21,25 +21,6 @@ export const articleSchema = z.object({
   "link-github": z.string().url().nullable(),
 })
 
-export async function generateMarkdownFileSummary({
-  dirPath,
-  fileName,
-}: {
-  dirPath: `${string}/${string}`
-  fileName: `${string}.md`
-}): Promise<MarkdownFileSummary> {
-  const filePath = `${dirPath}/${fileName}`
-  const fileText = await Deno.readTextFile(filePath)
-  const fileNameWithoutExtension = removeFileExtension(fileName)
-  const slug = slugifyFileName(fileNameWithoutExtension)
-  return {
-    slug,
-    fileName,
-    dirPath,
-    fileText,
-  }
-}
-
 export function getArticleFrontmatter({
   fileText,
   fileName,

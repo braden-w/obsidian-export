@@ -5,7 +5,7 @@ import {
   applyToFilesRecursive,
 } from "./fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
-import { generateMarkdownFileSummary } from "./markdownUtils.ts"
+import { generateMarkdownFileSummary } from "./markdown/generateMarkdownFileSummary.ts"
 
 export type SlugToSummaryMap = Map<Slug, MarkdownFileSummary>
 
