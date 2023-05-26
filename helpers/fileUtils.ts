@@ -1,6 +1,9 @@
 import { contentDirectory } from "../mod.ts"
 import { Slug, MarkdownFileSummary } from "../types.d.ts"
-import { applyToFilesRecursive } from "./fileUtils/applyToFilesRecursive.ts"
+import {
+  ProcessFileFn,
+  applyToFilesRecursive,
+} from "./fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "./isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "./markdownUtils.ts"
 
@@ -10,7 +13,7 @@ export type SlugToSummaryMap = Map<Slug, MarkdownFileSummary>
 export async function getSlugToSummaryMap(): Promise<SlugToSummaryMap> {
   const slugToSummaryMap: SlugToSummaryMap = new Map()
 
-  const processFileEntry = async (filePath: string, fileName: string) => {
+  const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
     if (!filePath.endsWith(".md")) return
     const markdownSummary = await getMarkdownFileSummary(
       filePath as `${string}/${string}.md`,

@@ -1,5 +1,8 @@
 import { getImageFiles, getMarkdownFileSlugs } from "../helpers/fileUtils.ts"
-import { applyToFilesRecursive } from "../helpers/fileUtils/applyToFilesRecursive.ts"
+import {
+  ProcessFileFn,
+  applyToFilesRecursive,
+} from "../helpers/fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "../helpers/markdownUtils.ts"
 import { processText } from "../helpers/processText.ts"
@@ -7,11 +10,11 @@ import { processText } from "../helpers/processText.ts"
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
 
-  const processFileEntry = async (entryPath: string, entryName: string) => {
-    if (!entryPath.endsWith(".md")) return
+  const processFileEntry: ProcessFileFn = async ({ filePath, fileName }) => {
+    if (!filePath.endsWith(".md")) return
     const markdownSummary = await getMarkdownFileSummary(
-      entryPath as `${string}/${string}.md`,
-      entryName
+      filePath as `${string}/${string}.md`,
+      fileName
     )
     if (!isCriteriaMet(markdownSummary)) return
     const { slug, fileText, fileNameWithoutExtension } = markdownSummary
