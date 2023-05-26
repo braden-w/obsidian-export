@@ -1,21 +1,11 @@
 import { getImageFiles, getMarkdownFileSlugs } from "../helpers/fileUtils.ts"
+import { applyToFilesRecursive } from "../helpers/fileUtils/applyToFilesRecursive.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import { getMarkdownFileSummary } from "../helpers/markdownUtils.ts"
 import { processText } from "../helpers/processText.ts"
 
 export async function obsidianExport(inputDir: string, outputDir: string) {
   const allMarkdownSlugifiedFiles = await getMarkdownFileSlugs()
-
-  async function traverseDirectory(path: string) {
-    for await (const dirEntry of Deno.readDir(path)) {
-      const entryPath = `${path}/${dirEntry.name}` as const
-      if (dirEntry.isDirectory) {
-        await traverseDirectory(entryPath)
-      } else {
-        await processFileEntry(entryPath, dirEntry.name)
-      }
-    }
-  }
 
   async function processFileEntry(entryPath: string, entryName: string) {
     if (!entryPath.endsWith(".md")) return
@@ -33,7 +23,7 @@ export async function obsidianExport(inputDir: string, outputDir: string) {
     await Deno.writeTextFile(`${outputDir}/${slug}.md`, processedText)
   }
 
-  traverseDirectory(inputDir)
+  applyToFilesRecursive(inputDir, processFileEntry)
 }
 
 export async function copyDirectory(
