@@ -5,7 +5,7 @@ import { BASE_URL, N_DAYS } from "../constants.ts"
 import { SlugToSummaryMap, getSlugToSummaryMap } from "../helpers/fileUtils.ts"
 import { isCriteriaMet } from "../helpers/isCriteriaMet.ts"
 import {
-  getArticleData,
+  getArticleFrontmatter,
   removeFileExtension,
   slugifyFileName,
 } from "../helpers/markdownUtils.ts"
@@ -26,9 +26,9 @@ async function main() {
   >(sectionTitles.map((title) => [title, []]))
 
   for (const summary of summaries) {
-    const frontmatter = getArticleData(summary).data
-    const resonance = frontmatter?.resonance
-    const tags = frontmatter?.tags
+    const { data, error } = getArticleFrontmatter(summary)
+    if (error) continue
+    const { resonance, tags } = data
     const reflectionsTags = ["Reflection", "Thought"]
     const mediaTags = ["Tweet", "Video", "Image", "Article"]
 
@@ -49,8 +49,8 @@ async function main() {
     Array.from(sections.entries()).map(([sectionName, summaries]) => [
       sectionName,
       summaries.sort((a, b) => {
-        const dataA = getArticleData(a).data
-        const dataB = getArticleData(b).data
+        const dataA = getArticleFrontmatter(a).data
+        const dataB = getArticleFrontmatter(b).data
         return (dataB?.resonance ?? 0) - (dataA?.resonance ?? 0)
       }),
     ])
@@ -88,7 +88,7 @@ async function generateSummary() {
   )
     .map(([_slug, markdownFileSummary]) => {
       if (!isCriteriaMet(markdownFileSummary)) return null
-      const { data, error } = getArticleData(markdownFileSummary)
+      const { data, error } = getArticleFrontmatter(markdownFileSummary)
       if (error) return null
       const { date, "date modified": dateModified } = data
       if (isDailyNoteWithinLastNDays(markdownFileSummary, N_DAYS)) {
