@@ -1,10 +1,14 @@
 import { slugifyFileName } from "./markdownUtils.ts"
 
-export function processText(
-  text: string,
-  title: string,
+export function processText({
+  text,
+  title,
+  allMarkdownSlugifiedFiles,
+}: {
+  text: string
+  title: string
   allMarkdownSlugifiedFiles: Set<string>
-) {
+}) {
   return addTitleToSecondLine(
     wikilinksToLinks(embedLinksToLinks(text), allMarkdownSlugifiedFiles),
     title
