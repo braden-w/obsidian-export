@@ -7,7 +7,8 @@ import { getMarkdownFileSummary } from "./markdownUtils.ts"
 export type MarkdownFileSummaries = Map<Slug, MarkdownFileSummary>
 export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries> {
   const markdownSlugToSummaries = new Map<Slug, MarkdownFileSummary>()
-  async function processFileEntry(filePath: string, fileName: string) {
+
+  const processFileEntry = async (filePath: string, fileName: string) => {
     if (!filePath.endsWith(".md")) return
     const markdownSummary = await getMarkdownFileSummary(
       filePath as `${string}/${string}.md`,
@@ -15,6 +16,7 @@ export async function getMarkdownFileSummaries(): Promise<MarkdownFileSummaries>
     )
     markdownSlugToSummaries.set(markdownSummary.slug, markdownSummary)
   }
+
   await applyToFilesRecursive(contentDirectory, processFileEntry)
   return markdownSlugToSummaries
 }
