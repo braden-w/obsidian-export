@@ -9,13 +9,13 @@ export function processText({
   title: string
   allMarkdownSlugifiedFiles: Set<string>
 }) {
-  return addTitleToSecondLine(
-    wikilinksToLinks({
+  return addTitleToSecondLine({
+    inputString: wikilinksToLinks({
       stringWithWikilinks: embedLinksToLinks(text),
       allMarkdownSlugifiedFiles,
     }),
-    title
-  )
+    title,
+  })
 }
 
 function wikilinksToLinks({
@@ -67,7 +67,13 @@ function embedLinksToLinks(stringWithEmbedLinks: string): string {
 }
 
 // Function that adds `title: ${title}` to the second line of the string
-function addTitleToSecondLine(inputString: string, title: string): string {
+function addTitleToSecondLine({
+  inputString,
+  title,
+}: {
+  inputString: string
+  title: string
+}): string {
   const lines = inputString.split("\n")
   lines.splice(1, 0, `title: ${title}`)
   return lines.join("\n")
