@@ -17,7 +17,7 @@ export async function applyToFilesRecursive({
 	processFileFn: ProcessFileFn;
 }) {
 	for await (const entry of readDir(dirPath)) {
-		if (entry.isDirectory) {
+		if (entry.isDirectory && !isEntryHidden(entry)) {
 			await applyToFilesRecursive({
 				dirPath: `${dirPath}/${entry.name}`,
 				processFileFn
@@ -27,3 +27,5 @@ export async function applyToFilesRecursive({
 		}
 	}
 }
+
+const isEntryHidden = (entry: Deno.DirEntry) => entry.name.startsWith('.');
