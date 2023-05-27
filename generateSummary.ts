@@ -120,7 +120,7 @@ function isWithinLastNDays({ date, numberOfDays }: { date: Date; numberOfDays: n
 }
 
 async function appendToFile({ filePath, fileText }: { filePath: string; fileText: string }) {
-	await writeTextFile(filePath, fileText, { append: true });
+	await Deno.writeTextFile(filePath, fileText, { append: true });
 }
 
 function extractNotesFromDailyNote(

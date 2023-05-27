@@ -1,9 +1,5 @@
-export async function writeTextFile(
-	filePath: string,
-	fileText: string,
-	options: { append?: boolean } = {}
-) {
-	return await Deno.writeTextFile(filePath, fileText, options);
+export async function writeTextFile(filePath: string, fileText: string) {
+	return await Deno.writeTextFile(filePath, fileText);
 }
 
 export async function copyFile(fromPath: string, toPath: string) {
