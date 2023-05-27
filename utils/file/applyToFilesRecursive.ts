@@ -17,7 +17,8 @@ export async function applyToFilesRecursive({
 	processFileFn: ProcessFileFn;
 }) {
 	for await (const entry of readDir(dirPath)) {
-		if (entry.isDirectory && !isEntryHidden(entry)) {
+		if (isEntryHidden(entry)) continue;
+		if (entry.isDirectory) {
 			await applyToFilesRecursive({
 				dirPath: `${dirPath}/${entry.name}`,
 				processFileFn
