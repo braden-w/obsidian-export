@@ -1,7 +1,7 @@
 import { parse } from 'https://deno.land/x/frontmatter/mod.ts';
 import { z } from 'https://deno.land/x/zod/mod.ts';
 
-import type { MarkdownFileSummary } from '../../types.d.ts';
+import type { MarkdownFileSummary } from '../types.d.ts';
 
 const articleSchema = z.object({
 	title: z.string().optional(),

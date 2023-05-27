@@ -1,22 +1,18 @@
-import { copyFile, writeTextFile } from '../helpers/bridge/denoBridge.ts';
-import { getMarkdownFileSlugs } from '../helpers/collection/derivedSets.ts';
-import { ProcessFileFn, applyToFilesRecursive } from '../helpers/file/applyToFilesRecursive.ts';
-import { generateMarkdownFileSummary } from '../helpers/markdown/generateMarkdownFileSummary.ts';
-import { isCriteriaMet } from '../helpers/markdown/isCriteriaMet.ts';
-import { processText } from '../helpers/markdown/processText.ts';
-import { MarkdownFileSummary } from '../types.d.ts';
+import { applyToFilesRecursive, ProcessFileFn } from './utils/file/applyToFilesRecursive.ts';
+import { copyFile, writeTextFile } from './utils/file/fileUtils.ts';
+import { generateMarkdownFileSummary } from './utils/markdown/generateMarkdownFileSummary.ts';
+import { isCriteriaMet } from './utils/markdown/isCriteriaMet.ts';
+import { processText } from './utils/markdown/processText.ts';
 
 export function obsidianExport({
 	inputDir,
 	outputDir,
-	markdownFileSummaries
+	markdownFileSlugs
 }: {
 	inputDir: string;
 	outputDir: string;
-	markdownFileSummaries: MarkdownFileSummary[];
+	markdownFileSlugs: Set<string>;
 }) {
-	const markdownFileSlugs = getMarkdownFileSlugs({ markdownFileSummaries });
-
 	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
 		if (!fileName.endsWith('.md')) return;
 		const markdownSummary = await generateMarkdownFileSummary({
