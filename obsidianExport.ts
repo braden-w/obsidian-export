@@ -39,7 +39,7 @@ export function copyReferencedImageFiles({
 	referencedImageFiles: Set<string>;
 }) {
 	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
-		const src = `${dirPath}/${fileName}`;
+		const src = `${dirPath}${fileName}`;
 		const dest = `${outputDir}/${fileName.replace(/ /g, '-')}`;
 
 		if (referencedImageFiles.has(fileName)) {
