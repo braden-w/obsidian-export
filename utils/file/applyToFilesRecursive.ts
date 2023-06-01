@@ -1,12 +1,6 @@
 import { readDir } from './fileUtils.ts';
 
-export type ProcessFileFn = ({
-	dirPath,
-	fileName
-}: {
-	dirPath: string;
-	fileName: string;
-}) => Promise<void>;
+export type ProcessFileFn = ({ path }: { path: string }) => Promise<void>;
 
 /** Applies a function to each file in a directory, recursively. */
 export async function applyToFilesRecursive({
@@ -24,7 +18,8 @@ export async function applyToFilesRecursive({
 				processFileFn
 			});
 		} else {
-			await processFileFn({ dirPath, fileName: entry.name });
+			const path = `${dirPath}/${entry.name}`;
+			await processFileFn({ path });
 		}
 	}
 }

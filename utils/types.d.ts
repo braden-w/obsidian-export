@@ -2,7 +2,6 @@ export type Slug = string;
 
 export type MarkdownFileSummary = {
 	slug: Slug;
-	fileName: `${string}.md`;
-	dirPath: string;
+	path: `${string}.md`;
 	fileText: string;
 };

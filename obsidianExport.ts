@@ -13,11 +13,10 @@ export function obsidianExport({
 	outputDir: string;
 	markdownFileSlugs: Set<string>;
 }) {
-	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
-		if (!fileName.endsWith('.md')) return;
+	const processFileEntry: ProcessFileFn = async ({ path }) => {
+		if (!path.endsWith('.md')) return;
 		const markdownSummary = await generateMarkdownFileSummary({
-			dirPath: dirPath as `${string}/${string}`,
-			fileName: fileName as `${string}.md`
+			path: path as `${string}.md`
 		});
 		if (!isCriteriaMet(markdownSummary)) return;
 		const processedText = processText(markdownSummary, markdownFileSlugs);
@@ -38,12 +37,11 @@ export function copyReferencedImageFiles({
 	outputDir: string;
 	referencedImageFiles: Set<string>;
 }) {
-	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
-		const src = `${dirPath}${fileName}`;
+	const processFileEntry: ProcessFileFn = async ({ path }) => {
+		const fileName = path.split('/').at(-1) as string;
 		const dest = `${outputDir}/${fileName.replace(/ /g, '-')}`;
-
 		if (referencedImageFiles.has(fileName)) {
-			await copyFile(src, dest);
+			await copyFile(path, dest);
 		}
 	};
 

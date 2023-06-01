@@ -21,12 +21,12 @@ const articleSchema = z.object({
 	'link-github': z.string().url().nullable()
 });
 
-export function getArticleFrontmatter({ fileText, fileName }: MarkdownFileSummary) {
+export function getArticleFrontmatter({ fileText, path }: MarkdownFileSummary) {
 	try {
 		const { data } = parse(fileText);
 		const dataParsed = articleSchema.parse(data);
 		return { data: dataParsed };
 	} catch (error) {
-		return { error: { fileName, message: error.message } };
+		return { error: { path, message: error.message } };
 	}
 }

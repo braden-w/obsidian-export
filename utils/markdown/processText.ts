@@ -4,7 +4,7 @@ import { slugifyFileName } from './slugifyFileName.ts';
 
 /** Function that takes in a file from Obsidian and returns a file that can be used in my blog */
 export function processText(
-	{ fileName, fileText }: MarkdownFileSummary,
+	{ path, fileText }: MarkdownFileSummary,
 	allMarkdownSlugifiedFiles: Set<string>
 ) {
 	const textEmbedsFixed = replaceWikiEmbedMdEmbed(fileText);
@@ -12,7 +12,8 @@ export function processText(
 		stringWithWikilinks: textEmbedsFixed,
 		allMarkdownSlugifiedFiles
 	});
-	const title = removeFileExtension(fileName);
+	const fileName = path.split('/').at(-1) as `${string}.md`;
+	const title = removeFileExtension({ fileName });
 	const textWithTitleFrontmatter = addTitleToSecondLine({
 		text: textLinksFixed,
 		title

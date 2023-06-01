@@ -1,5 +1,3 @@
-import type { MarkdownFileSummary } from '../types.d.ts';
-
-export function removeFileExtension(fileName: MarkdownFileSummary['fileName']): string {
+export function removeFileExtension({ fileName }: { fileName: `${string}.md` }): string {
 	return fileName.slice(0, -3);
 }

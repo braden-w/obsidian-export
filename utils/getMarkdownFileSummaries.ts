@@ -9,11 +9,10 @@ export async function getMarkdownFileSummaries(
 ): Promise<MarkdownFileSummary[]> {
 	const markdownFileSummaries: MarkdownFileSummary[] = [];
 
-	const processFileEntry: ProcessFileFn = async ({ dirPath, fileName }) => {
-		if (!fileName.endsWith('.md')) return;
+	const processFileEntry: ProcessFileFn = async ({ path }) => {
+		if (!path.endsWith('.md')) return;
 		const markdownSummary = await generateMarkdownFileSummary({
-			dirPath: dirPath as `${string}/${string}`,
-			fileName: fileName as `${string}.md`
+			path: path as `${string}.md`
 		});
 		markdownFileSummaries.push(markdownSummary);
 	};
