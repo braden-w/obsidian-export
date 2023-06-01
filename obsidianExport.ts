@@ -21,7 +21,7 @@ export function obsidianExport({
 		if (!isCriteriaMet(markdownSummary)) return;
 		const processedText = processText(markdownSummary, markdownFileSlugs);
 		const { slug } = markdownSummary;
-		await writeTextFile(`${outputDir}/${slug}.md`, processedText);
+		await writeTextFile({ filePath: `${outputDir}/${slug}.md`, fileText: processedText });
 	};
 
 	applyToFilesRecursive({ dirPath: inputDir, processFileFn: processFileEntry });
@@ -41,7 +41,7 @@ export function copyReferencedImageFiles({
 		const fileName = path.split('/').at(-1) as string;
 		const dest = `${outputDir}/${fileName.replace(/ /g, '-')}`;
 		if (referencedImageFiles.has(fileName)) {
-			await copyFile(path, dest);
+			await copyFile({ fromPath: path, toPath: dest });
 		}
 	};
 

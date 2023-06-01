@@ -10,7 +10,7 @@ export async function applyToFilesRecursive({
 	dirPath: string;
 	processFileFn: ProcessFileFn;
 }) {
-	for await (const entry of readDir(dirPath)) {
+	for await (const entry of readDir({ path: dirPath })) {
 		if (isEntryHidden(entry)) continue;
 		if (entry.isDirectory) {
 			await applyToFilesRecursive({

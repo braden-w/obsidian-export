@@ -66,7 +66,7 @@ export async function generateDailyActivitySummary({
 	} satisfies Intl.DateTimeFormatOptions;
 	const todayFormatted = today.toLocaleDateString('en-US', options);
 	const fileName = `Musings—Stuff that Came Up On ${todayFormatted}.md`;
-	await writeTextFile(`${contentDirectory}/summaries/${fileName}`, output);
+	await writeTextFile({ filePath: `${contentDirectory}/summaries/${fileName}`, fileText: output });
 }
 
 function createSummaryLink({ fileName, slug }: MarkdownFileSummary): string {

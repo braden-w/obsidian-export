@@ -8,7 +8,7 @@ export async function generateMarkdownFileSummary({
 }: {
 	path: `${string}.md`;
 }): Promise<MarkdownFileSummary> {
-	const fileText = await readTextFile(path);
+	const fileText = await readTextFile({ path });
 	const fileName = path.split('/').at(-1) as `${string}.md`;
 	const fileNameWithoutExtension = removeFileExtension({ fileName });
 	const slug = slugifyFileName(fileNameWithoutExtension);

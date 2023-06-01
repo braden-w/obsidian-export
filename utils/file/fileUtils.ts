@@ -1,19 +1,25 @@
-export function readTextFile(path: string) {
+export function readTextFile({ path }: { path: string }) {
 	return Deno.readTextFile(path);
 }
 
-export async function writeTextFile(filePath: string, fileText: string) {
+export async function writeTextFile({
+	filePath,
+	fileText
+}: {
+	filePath: string;
+	fileText: string;
+}) {
 	return await Deno.writeTextFile(filePath, fileText);
 }
 
-export async function copyFile(fromPath: string, toPath: string) {
+export async function copyFile({ fromPath, toPath }: { fromPath: string; toPath: string }) {
 	return await Deno.copyFile(fromPath, toPath);
 }
 
-export function readDir(path: string) {
+export function readDir({ path }: { path: string }) {
 	return Deno.readDir(path);
 }
 
-export async function mkdir(path: string) {
+export async function mkdir({ path }: { path: string }) {
 	return await Deno.mkdir(path);
 }
